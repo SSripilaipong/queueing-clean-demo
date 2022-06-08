@@ -1,0 +1,17 @@
+version: "3.5"
+
+services:
+  app:
+    container_name: app
+    build:
+      dockerfile: app.Dockerfile
+    restart: "no"
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+
+networks:
+  default:
+    name: MyNetwork
+    external: true

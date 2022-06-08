@@ -1,0 +1,22 @@
+### create doctor queue
+POST http://localhost:8080/doctor-queues/629c93cae6509bc3a7b1aaf7
+Content-Type: application/json
+
+### create visit
+POST http://localhost:8080/his/visits
+Content-Type: application/json
+
+{
+  "name": "Shane",
+  "gender": "ABC",
+  "age": 123
+}
+
+### submit assessment to visit
+PUT http://localhost:8080/his/visits/629c93cae6509bc3a7b1aaf7/assessment
+Content-Type: application/json
+
+{
+  "comment": "Very Goooood",
+  "painScore": 999
+}

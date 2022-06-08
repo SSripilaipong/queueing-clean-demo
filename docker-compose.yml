@@ -1,0 +1,98 @@
+version: "3.5"
+
+services:
+  app:
+    container_name: app
+    build:
+      dockerfile: app.Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+
+  # mongdb primary node
+  # reference: https://github.com/bitnami/bitnami-docker-mongodb/blob/master/docker-compose-replicaset.yml
+  mongodb:
+    container_name: mongodb
+    image: bitnami/mongodb:5.0
+    restart: always
+    networks:
+      - default
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_ADVERTISED_HOSTNAME: mongodb
+      MONGODB_ROOT_USERNAME: root
+      MONGODB_ROOT_PASSWORD: admin
+      MONGODB_REPLICA_SET_KEY: replicasetkey123
+    ports:
+      - '27017:27017'
+
+  # mongdb replica node
+  # reference: https://github.com/bitnami/bitnami-docker-mongodb/blob/master/docker-compose-replicaset.yml
+  mongodb-replica0:
+    container_name: mongodb-replica0
+    image: bitnami/mongodb:5.0
+    restart: always
+    depends_on:
+      - mongodb
+    networks:
+      - default
+    environment:
+      MONGODB_REPLICA_SET_MODE: secondary
+      MONGODB_ADVERTISED_HOSTNAME: mongodb-replica0
+      MONGODB_INITIAL_PRIMARY_HOST: mongodb
+      MONGODB_INITIAL_PRIMARY_ROOT_USERNAME: root
+      MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: admin
+      MONGODB_REPLICA_SET_KEY: replicasetkey123
+
+  # mongdb replica node
+  # reference: https://github.com/bitnami/bitnami-docker-mongodb/blob/master/docker-compose-replicaset.yml
+  mongodb-arbiter:
+    container_name: mongodb-arbiter
+    image: bitnami/mongodb:5.0
+    restart: always
+    depends_on:
+      - mongodb
+    networks:
+      - default
+    environment:
+      MONGODB_REPLICA_SET_MODE: arbiter
+      MONGODB_ADVERTISED_HOSTNAME: mongodb-arbiter
+      MONGODB_INITIAL_PRIMARY_HOST: mongodb
+      MONGODB_INITIAL_PRIMARY_ROOT_USERNAME: root
+      MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: admin
+      MONGODB_REPLICA_SET_KEY: replicasetkey123
+
+  # mongodb ui
+  # reference: https://hub.docker.com/_/mongo-express
+  mongodb-admin:
+    container_name: mongodb-admin
+    image: mongo-express:0.54
+    restart: always
+    depends_on:
+      - mongodb
+    networks:
+      - default
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+    ports:
+      - '8081:8081'
+
+  rabbitmq:
+    image: rabbitmq:3.10-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "8082:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=admin
+    networks:
+      - default
+
+networks:
+  default:
+    name: MyNetwork
