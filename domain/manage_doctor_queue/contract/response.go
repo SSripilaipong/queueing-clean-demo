@@ -1,4 +1,4 @@
-package contract
+package manage_doctor_queue
 
 import (
 	"time"
@@ -15,9 +15,4 @@ type VisitShortInfoResponse struct {
 	Gender    string
 	Age       int
 	EnterTime time.Time
-}
-
-type AssessmentResponse struct {
-	NursingAssessment string
-	PainScore         int
 }

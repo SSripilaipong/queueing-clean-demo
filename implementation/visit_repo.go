@@ -6,8 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"queueing-clean-demo/base"
-	v "queueing-clean-demo/domain"
-	"queueing-clean-demo/domain/contract"
+	v "queueing-clean-demo/domain/clinical_diagnose"
+	"queueing-clean-demo/domain/common/contract"
 )
 
 type VisitRepoInMongo struct {
@@ -50,7 +50,7 @@ func (r *VisitRepoInMongo) FindById(id string) (*v.Visit, error) {
 
 	var result *mongo.SingleResult
 	if result = r.Collection.FindOne(context.Background(), filter); result.Err() == mongo.ErrNoDocuments {
-		return nil, contract.VisitNotFoundError{}
+		return nil, common.VisitNotFoundError{}
 	}
 
 	visit := &v.Visit{}
@@ -101,7 +101,7 @@ func (r *VisitRepoInMongo) Create(visit *v.Visit) (*v.Visit, error) {
 	case err == nil:
 		break
 	case IsDuplicateKeyError(err):
-		return nil, contract.DuplicateVisitIdError{}
+		return nil, common.DuplicateVisitIdError{}
 	default:
 		return nil, err
 	}

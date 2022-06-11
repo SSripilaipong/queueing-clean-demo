@@ -1,19 +1,19 @@
-package contract
+package domain
 
 import (
-	"queueing-clean-demo/domain/usecase/clinical_diagnose/contract"
-	contract2 "queueing-clean-demo/domain/usecase/manage_doctor_queue/contract"
+	"queueing-clean-demo/domain/clinical_diagnose/contract"
+	"queueing-clean-demo/domain/manage_doctor_queue/contract"
 )
 
 type IClinicalDiagnoseUsecase interface {
-	CreateVisit(request contract.CreateVisit) (contract.Visit, error)
-	SubmitAssessment(request contract.SubmitAssessment) (contract.Visit, error)
+	CreateVisit(request clinical_diagnose.CreateVisit) (clinical_diagnose.clinical_diagnose, error)
+	SubmitAssessment(request clinical_diagnose.SubmitAssessment) (clinical_diagnose.VisitResponse, error)
 }
 
 type IManageDoctorQueueUsecase interface {
-	PushVisit(request contract2.PushVisitToDoctorQueue) (contract2.DoctorQueueResponse, error)
-	CallVisit(request contract2.CallVisitFromDoctorQueue) (contract2.DoctorQueueResponse, error)
-	CompleteDiagnosis(request contract2.CompleteDiagnosis) (contract2.DoctorQueueResponse, error)
-	CheckVisits(request contract2.CheckVisits) (contract2.DoctorQueueResponse, error)
-	CreateDoctorQueue(request contract2.CreateDoctorQueue) (contract2.DoctorQueueResponse, error)
+	PushVisit(request manage_doctor_queue.PushVisitToDoctorQueue) (manage_doctor_queue.manage_doctor_queue, error)
+	CallVisit(request manage_doctor_queue.CallVisitFromDoctorQueue) (manage_doctor_queue.DoctorQueueResponse, error)
+	CompleteDiagnosis(request manage_doctor_queue.CompleteDiagnosis) (manage_doctor_queue.DoctorQueueResponse, error)
+	CheckVisits(request manage_doctor_queue.CheckVisits) (manage_doctor_queue.DoctorQueueResponse, error)
+	CreateDoctorQueue(request manage_doctor_queue.CreateDoctorQueue) (manage_doctor_queue.DoctorQueueResponse, error)
 }

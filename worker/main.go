@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/streadway/amqp"
-	"queueing-clean-demo/domain/usecase/clinical_diagnose/contract"
-	contract2 "queueing-clean-demo/domain/usecase/manage_doctor_queue/contract"
+	"queueing-clean-demo/domain/clinical_diagnose/contract"
+	"queueing-clean-demo/domain/manage_doctor_queue/contract"
 	"queueing-clean-demo/implementation/mongodb"
 )
 
@@ -19,7 +19,7 @@ func RunWorker(ctx context.Context) {
 
 		switch message.Name {
 		case "VisitAssessedEvent":
-			var e contract.VisitAssessedEvent
+			var e clinical_diagnose.VisitAssessedEvent
 			mapToStruct(message.Payload, &e)
 			handleVisitAssessedEvent(deps, e)
 		}
@@ -27,7 +27,7 @@ func RunWorker(ctx context.Context) {
 
 }
 
-func mapToStruct(payload map[string]any, e *contract.VisitAssessedEvent) {
+func mapToStruct(payload map[string]any, e *clinical_diagnose.VisitAssessedEvent) {
 	var err error
 
 	var b []byte
@@ -40,16 +40,16 @@ func mapToStruct(payload map[string]any, e *contract.VisitAssessedEvent) {
 	}
 }
 
-func handleVisitAssessedEvent(deps *Deps, e contract.VisitAssessedEvent) {
+func handleVisitAssessedEvent(deps *Deps, e clinical_diagnose.VisitAssessedEvent) {
 	var err error
-	switch _, err = deps.ManageDoctorQueueUsecase.PushVisit(contract2.PushVisitToDoctorQueue{
+	switch _, err = deps.ManageDoctorQueueUsecase.PushVisit(manage_doctor_queue.manage_doctor_queue{
 		DoctorId:      "629c93cae6509bc3a7b1aaf7",
 		VisitId:       e.VisitId,
 		PatientName:   e.Name,
 		PatientGender: e.Gender,
 		PatientAge:    e.Age,
 	}); err {
-	case contract2.VisitAlreadyExistsError{}:
+	case manage_doctor_queue.VisitAlreadyExistsError{}:
 		return
 	case nil:
 		return
@@ -74,8 +74,12 @@ func runWorkerLoop(ctx context.Context, handle func(*Deps, amqp.Delivery)) {
 	deps := createDeps(mgConn.Client.Database("OPD"))
 
 	rbConn, rbCh := makeChannel()
-	defer rbConn.Close()
-	defer rbCh.Close()
+	defer func(rbConn *amqp.Connection) {
+		_ = rbConn.Close()
+	}(rbConn)
+	defer func(rbCh *amqp.Channel) {
+		_ = rbCh.Close()
+	}(rbCh)
 
 	var delivery <-chan amqp.Delivery
 	if delivery, err = rbCh.Consume(
@@ -114,7 +118,9 @@ func makeChannel() (*amqp.Connection, *amqp.Channel) {
 
 	var ch *amqp.Channel
 	if ch, err = conn.Channel(); err != nil {
-		defer conn.Close()
+		defer func(conn *amqp.Connection) {
+			_ = conn.Close()
+		}(conn)
 		panic(err)
 	}
 	return conn, ch

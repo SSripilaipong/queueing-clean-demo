@@ -1,4 +1,4 @@
-package deps
+package _deps
 
 import (
 	"time"

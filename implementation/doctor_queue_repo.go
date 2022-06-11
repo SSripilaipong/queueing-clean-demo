@@ -6,9 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"queueing-clean-demo/base"
-	derr "queueing-clean-demo/domain/contract"
-	v "queueing-clean-demo/domain/usecase/manage_doctor_queue"
-	"queueing-clean-demo/domain/usecase/manage_doctor_queue/contract"
+	v "queueing-clean-demo/domain/manage_doctor_queue"
+	"queueing-clean-demo/domain/manage_doctor_queue/contract"
 )
 
 type DoctorQueueRepoInMongo struct {
@@ -51,7 +50,7 @@ func (r *DoctorQueueRepoInMongo) FindByDoctorId(id string) (*v.DoctorQueue, erro
 
 	var result *mongo.SingleResult
 	if result = r.Collection.FindOne(context.Background(), filter); result.Err() == mongo.ErrNoDocuments {
-		return nil, contract.DoctorQueueNotFoundError{}
+		return nil, manage_doctor_queue.DoctorQueueNotFoundError{}
 	}
 
 	queue := &v.DoctorQueue{}
@@ -102,7 +101,7 @@ func (r *DoctorQueueRepoInMongo) Create(queue *v.DoctorQueue) (*v.DoctorQueue, e
 	case err == nil:
 		break
 	case IsDuplicateKeyError(err):
-		return nil, derr.DuplicateVisitIdError{}
+		return nil, manage_doctor_queue.DuplicateDoctorQueueIdError{}
 	default:
 		return nil, err
 	}

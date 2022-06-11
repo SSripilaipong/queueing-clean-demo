@@ -1,9 +1,9 @@
-package domain
+package _clinical_diagnose
 
 import (
 	"queueing-clean-demo/base"
-	"queueing-clean-demo/domain/usecase/clinical_diagnose/contract"
-	contract2 "queueing-clean-demo/domain/usecase/manage_doctor_queue/contract"
+	"queueing-clean-demo/domain/clinical_diagnose/contract"
+	"queueing-clean-demo/domain/common/contract"
 )
 
 type Visit struct {
@@ -22,7 +22,7 @@ type Assessment struct {
 
 func NewVisit(id string, name string, gender string, age int) (*Visit, error) {
 	if age < 0 {
-		return nil, contract2.InvalidVisitDataError{}
+		return nil, common.InvalidVisitDataError{}
 	}
 
 	visit := &Visit{
@@ -36,10 +36,10 @@ func NewVisit(id string, name string, gender string, age int) (*Visit, error) {
 
 func (v *Visit) SubmitAssessment(assessment Assessment) error {
 	if v.Assessment != nil {
-		return contract.AssessmentAlreadyExistError{}
+		return clinical_diagnose.AssessmentAlreadyExistError{}
 	}
 	v.Assessment = &assessment
-	v.AppendEvent(contract.VisitAssessedEvent{
+	v.AppendEvent(clinical_diagnose.VisitAssessedEvent{
 		VisitId: v.Id,
 		Name:    v.Name,
 		Gender:  v.Gender,

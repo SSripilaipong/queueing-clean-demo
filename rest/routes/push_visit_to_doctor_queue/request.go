@@ -2,7 +2,7 @@ package push_visit_to_doctor_queue
 
 import (
 	"github.com/gin-gonic/gin"
-	"queueing-clean-demo/domain/usecase/manage_doctor_queue/contract"
+	"queueing-clean-demo/domain/manage_doctor_queue/contract"
 )
 
 type PushVisit struct {
@@ -12,15 +12,15 @@ type PushVisit struct {
 	PatientAge    int
 }
 
-func makeRequest(ctx *gin.Context) (contract.PushVisitToDoctorQueue, error) {
+func makeRequest(ctx *gin.Context) (manage_doctor_queue.manage_doctor_queue, error) {
 	doctorId := ctx.Param("doctorId")
 
 	var body PushVisit
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		return contract.PushVisitToDoctorQueue{}, err
+		return manage_doctor_queue.PushVisitToDoctorQueue{}, err
 	}
 
-	return contract.PushVisitToDoctorQueue{
+	return manage_doctor_queue.PushVisitToDoctorQueue{
 		DoctorId:      doctorId,
 		VisitId:       body.VisitId,
 		PatientName:   body.PatientName,

@@ -2,7 +2,7 @@ package create_visit
 
 import (
 	"github.com/gin-gonic/gin"
-	"queueing-clean-demo/domain/usecase/clinical_diagnose/contract"
+	"queueing-clean-demo/domain/clinical_diagnose/contract"
 )
 
 type jsonBody struct {
@@ -11,13 +11,13 @@ type jsonBody struct {
 	Age    int    `json:"age"`
 }
 
-func makeRequest(ctx *gin.Context) (contract.CreateVisit, error) {
+func makeRequest(ctx *gin.Context) (clinical_diagnose.clinical_diagnose, error) {
 	var body jsonBody
 	if err := ctx.ShouldBindJSON(body); err != nil {
-		return contract.CreateVisit{}, err
+		return clinical_diagnose.CreateVisit{}, err
 	}
 
-	return contract.CreateVisit{
+	return clinical_diagnose.CreateVisit{
 		Name:   body.Name,
 		Gender: body.Gender,
 		Age:    body.Age,

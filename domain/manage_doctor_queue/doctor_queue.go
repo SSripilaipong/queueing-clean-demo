@@ -1,9 +1,9 @@
-package manage_doctor_queue
+package _manage_doctor_queue
 
 import (
 	"queueing-clean-demo/base"
-	derr "queueing-clean-demo/domain/contract"
-	"queueing-clean-demo/domain/usecase/manage_doctor_queue/contract"
+	"queueing-clean-demo/domain/common/contract"
+	"queueing-clean-demo/domain/manage_doctor_queue/contract"
 	"time"
 )
 
@@ -28,7 +28,7 @@ func NewDoctorQueue(doctorId string) (*DoctorQueue, error) {
 
 func (q *DoctorQueue) PushVisit(visit VisitShortInfo) error {
 	if q.Visits.hasVisit(visit.Id) {
-		return contract.VisitAlreadyExistsError{}
+		return manage_doctor_queue.manage_doctor_queue{}
 	}
 	q.Visits.add(visit)
 	return nil
@@ -36,10 +36,10 @@ func (q *DoctorQueue) PushVisit(visit VisitShortInfo) error {
 
 func (q *DoctorQueue) CallVisit(id string) error {
 	if q.VisitInProgress != nil {
-		return contract.DoctorStillBusyError{}
+		return manage_doctor_queue.DoctorStillBusyError{}
 	}
 	if !q.Visits.hasVisit(id) {
-		return derr.VisitNotFoundError{}
+		return common.VisitNotFoundError{}
 	}
 	visit := q.Visits.pop(id)
 	q.VisitInProgress = &visit
@@ -48,7 +48,7 @@ func (q *DoctorQueue) CallVisit(id string) error {
 
 func (q *DoctorQueue) CompleteDiagnosis() error {
 	if q.VisitInProgress == nil {
-		return contract.NoVisitInProgressToCompleteError{}
+		return manage_doctor_queue.NoVisitInProgressToCompleteError{}
 	}
 	q.VisitInProgress = nil
 	return nil

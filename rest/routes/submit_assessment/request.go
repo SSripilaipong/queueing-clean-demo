@@ -2,7 +2,7 @@ package submit_assessment
 
 import (
 	"github.com/gin-gonic/gin"
-	"queueing-clean-demo/domain/usecase/clinical_diagnose/contract"
+	"queueing-clean-demo/domain/clinical_diagnose/contract"
 )
 
 type SubmitAssessment struct {
@@ -10,15 +10,15 @@ type SubmitAssessment struct {
 	PainScore         int    `json:"painScore"`
 }
 
-func makeRequest(ctx *gin.Context) (contract.SubmitAssessment, error) {
+func makeRequest(ctx *gin.Context) (clinical_diagnose.clinical_diagnose, error) {
 	visitId := ctx.Param("visitId")
 
 	var body SubmitAssessment
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		return contract.SubmitAssessment{}, err
+		return clinical_diagnose.SubmitAssessment{}, err
 	}
 
-	return contract.SubmitAssessment{
+	return clinical_diagnose.SubmitAssessment{
 		VisitId:           visitId,
 		NursingAssessment: body.NursingAssessment,
 		PainScore:         body.PainScore,

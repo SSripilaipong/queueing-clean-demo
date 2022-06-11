@@ -1,4 +1,4 @@
-package contract
+package manage_doctor_queue
 
 type PushVisitToDoctorQueue struct {
 	DoctorId      string

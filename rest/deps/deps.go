@@ -5,6 +5,6 @@ import (
 )
 
 type RestDeps struct {
-	ClinicalDiagnoseUsecase  contract.IClinicalDiagnoseUsecase
-	ManageDoctorQueueUsecase contract.IManageDoctorQueueUsecase
+	ClinicalDiagnoseUsecase  domain.IClinicalDiagnoseUsecase
+	ManageDoctorQueueUsecase domain.IManageDoctorQueueUsecase
 }

@@ -1,4 +1,4 @@
-package contract
+package clinical_diagnose
 
 type AssessmentAlreadyExistError struct {
 }
