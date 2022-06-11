@@ -16,7 +16,7 @@ func Route(ctx *gin.Context, deps *d.RestDeps) ext.Response {
 		switch err.(type) {
 		case common.VisitNotFoundError:
 			return ext.Response{Code: http.StatusNotFound, Body: map[string]string{"message": "visit not found"}}
-		case clinical_diagnose.clinical_diagnose:
+		case clinical_diagnose.AssessmentAlreadyExistError:
 			return ext.Response{Code: http.StatusConflict, Body: map[string]string{"message": "assessment already submitted"}}
 		case nil:
 			return ext.Response{Code: http.StatusOK, Body: map[string]string{"message": "submitted"}}

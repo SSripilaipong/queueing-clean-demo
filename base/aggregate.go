@@ -1,5 +1,12 @@
 package base
 
+type IAggregateRepr interface {
+	GetEvents() []IEvent
+	GetVersion() int
+	IncreaseVersion()
+	SetVersion(int)
+}
+
 type IAggregate interface {
 	GetEvents() []IEvent
 	AppendEvent(event IEvent)
@@ -47,4 +54,25 @@ func (e *events) getArray() []IEvent {
 		result[i] = e
 	}
 	return result
+}
+
+type AggregateRepr struct {
+	Version int      `json:"_version"`
+	Events  []IEvent `json:"_latestEvents"`
+}
+
+func (a *AggregateRepr) GetEvents() []IEvent {
+	return a.Events
+}
+
+func (a *AggregateRepr) GetVersion() int {
+	return a.Version
+}
+
+func (a *AggregateRepr) SetVersion(version int) {
+	a.Version = version
+}
+
+func (a *AggregateRepr) IncreaseVersion() {
+	a.Version++
 }

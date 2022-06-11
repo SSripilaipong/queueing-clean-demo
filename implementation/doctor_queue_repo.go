@@ -6,19 +6,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"queueing-clean-demo/base"
-	v "queueing-clean-demo/domain/manage_doctor_queue"
-	"queueing-clean-demo/domain/manage_doctor_queue/contract"
+	. "queueing-clean-demo/domain/manage_doctor_queue/contract"
 )
 
 type DoctorQueueRepoInMongo struct {
 	Collection *mongo.Collection
 }
 
-func (r *DoctorQueueRepoInMongo) FindByDoctorIdAndUpdate(id string, update func(queue *v.DoctorQueue) (*v.DoctorQueue, error)) (*v.DoctorQueue, error) {
-	var queue *v.DoctorQueue
+func (r *DoctorQueueRepoInMongo) FindByDoctorIdAndUpdate(id string, update func(queue *DoctorQueueRepr) (*DoctorQueueRepr, error)) (*DoctorQueueRepr, error) {
+	var queue *DoctorQueueRepr
 	var err error
 
-	if queue, err = base.OptimisticLockingRetry(20, func() (*v.DoctorQueue, error) {
+	if queue, err = base.OptimisticLockingRetry(20, func() (*DoctorQueueRepr, error) {
 		if queue, err = r.FindByDoctorId(id); err != nil {
 			return nil, err
 		}
@@ -39,7 +38,7 @@ func (r *DoctorQueueRepoInMongo) FindByDoctorIdAndUpdate(id string, update func(
 	return queue, nil
 }
 
-func (r *DoctorQueueRepoInMongo) FindByDoctorId(id string) (*v.DoctorQueue, error) {
+func (r *DoctorQueueRepoInMongo) FindByDoctorId(id string) (*DoctorQueueRepr, error) {
 	var err error
 
 	var objectId primitive.ObjectID
@@ -50,10 +49,10 @@ func (r *DoctorQueueRepoInMongo) FindByDoctorId(id string) (*v.DoctorQueue, erro
 
 	var result *mongo.SingleResult
 	if result = r.Collection.FindOne(context.Background(), filter); result.Err() == mongo.ErrNoDocuments {
-		return nil, manage_doctor_queue.DoctorQueueNotFoundError{}
+		return nil, DoctorQueueNotFoundError{}
 	}
 
-	queue := &v.DoctorQueue{}
+	queue := &DoctorQueueRepr{}
 	if err = DecodeDocument(result, queue); err != nil {
 		return nil, err
 	}
@@ -61,7 +60,7 @@ func (r *DoctorQueueRepoInMongo) FindByDoctorId(id string) (*v.DoctorQueue, erro
 	return queue, nil
 }
 
-func (r *DoctorQueueRepoInMongo) Save(queue *v.DoctorQueue) (*v.DoctorQueue, error) {
+func (r *DoctorQueueRepoInMongo) Save(queue *DoctorQueueRepr) (*DoctorQueueRepr, error) {
 	var err error
 
 	var objectId primitive.ObjectID
@@ -71,7 +70,7 @@ func (r *DoctorQueueRepoInMongo) Save(queue *v.DoctorQueue) (*v.DoctorQueue, err
 	filter := bson.D{{"_id", objectId}, {"_version", queue.GetVersion()}}
 
 	var document map[string]any
-	if document, err = makeDocument(queue.DoctorId, queue.GetVersion()+1, queue, err); err != nil {
+	if document, err = MakeDocument(queue.DoctorId, queue); err != nil {
 		return nil, err
 	}
 
@@ -89,11 +88,11 @@ func (r *DoctorQueueRepoInMongo) Save(queue *v.DoctorQueue) (*v.DoctorQueue, err
 	return queue, nil
 }
 
-func (r *DoctorQueueRepoInMongo) Create(queue *v.DoctorQueue) (*v.DoctorQueue, error) {
+func (r *DoctorQueueRepoInMongo) Create(queue *DoctorQueueRepr) (*DoctorQueueRepr, error) {
 	var err error
 	var document map[string]any
 
-	if document, err = makeDocument(queue.DoctorId, queue.GetVersion(), queue, err); err != nil {
+	if document, err = MakeDocument(queue.DoctorId, queue); err != nil {
 		return nil, err
 	}
 
@@ -101,7 +100,7 @@ func (r *DoctorQueueRepoInMongo) Create(queue *v.DoctorQueue) (*v.DoctorQueue, e
 	case err == nil:
 		break
 	case IsDuplicateKeyError(err):
-		return nil, manage_doctor_queue.DuplicateDoctorQueueIdError{}
+		return nil, DuplicateDoctorQueueIdError{}
 	default:
 		return nil, err
 	}

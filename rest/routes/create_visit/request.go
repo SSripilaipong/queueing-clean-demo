@@ -11,9 +11,9 @@ type jsonBody struct {
 	Age    int    `json:"age"`
 }
 
-func makeRequest(ctx *gin.Context) (clinical_diagnose.clinical_diagnose, error) {
+func makeRequest(ctx *gin.Context) (clinical_diagnose.CreateVisit, error) {
 	var body jsonBody
-	if err := ctx.ShouldBindJSON(body); err != nil {
+	if err := ctx.ShouldBindJSON(&body); err != nil {
 		return clinical_diagnose.CreateVisit{}, err
 	}
 

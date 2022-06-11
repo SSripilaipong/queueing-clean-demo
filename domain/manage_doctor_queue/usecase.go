@@ -15,29 +15,30 @@ func (u *Usecase) CreateDoctorQueue(request CreateDoctorQueue) (DoctorQueueRespo
 
 	queue, err := NewDoctorQueue(request.DoctorId)
 	if err == nil {
-		queue, err = u.DoctorQueueRepo.Create(queue)
+		_, err = u.DoctorQueueRepo.Create(queue.ToRepr())
 	}
 
 	switch err.(type) {
 	case DuplicateDoctorQueueIdError:
 		return DoctorQueueResponse{}, err
 	case nil:
-		return DoctorQueueResponseFromDoctorQueue(queue), nil
+		return queue.ToResponse(), nil
 	}
 	panic(err)
 }
 
 func (u *Usecase) PushVisit(request PushVisitToDoctorQueue) (DoctorQueueResponse, error) {
 
-	queue, err := u.DoctorQueueRepo.FindByDoctorIdAndUpdate(request.DoctorId, func(queue *DoctorQueue) (*DoctorQueue, error) {
+	repr, err := u.DoctorQueueRepo.FindByDoctorIdAndUpdate(request.DoctorId, func(repr *DoctorQueueRepr) (*DoctorQueueRepr, error) {
 
 		info := VisitShortInfoFromPushVisitToDoctorQueueRequest(request)
 		info.EnterTime = u.Clock.Now()
 
+		queue := NewDoctorQueueFromRepr(repr)
 		if err := queue.PushVisit(info); err != nil {
 			return nil, err
 		}
-		return queue, nil
+		return queue.ToRepr(), nil
 	})
 
 	switch err.(type) {
@@ -46,18 +47,19 @@ func (u *Usecase) PushVisit(request PushVisitToDoctorQueue) (DoctorQueueResponse
 	case VisitAlreadyExistsError:
 		return DoctorQueueResponse{}, err
 	case nil:
-		return DoctorQueueResponseFromDoctorQueue(queue), nil
+		return NewDoctorQueueFromRepr(repr).ToResponse(), nil
 	}
 	panic(err)
 }
 
 func (u *Usecase) CallVisit(request CallVisitFromDoctorQueue) (DoctorQueueResponse, error) {
 
-	queue, err := u.DoctorQueueRepo.FindByDoctorIdAndUpdate(request.DoctorId, func(queue *DoctorQueue) (*DoctorQueue, error) {
+	repr, err := u.DoctorQueueRepo.FindByDoctorIdAndUpdate(request.DoctorId, func(repr *DoctorQueueRepr) (*DoctorQueueRepr, error) {
+		queue := NewDoctorQueueFromRepr(repr)
 		if err := queue.CallVisit(request.VisitId); err != nil {
 			return nil, err
 		}
-		return queue, nil
+		return queue.ToRepr(), nil
 	})
 
 	switch err.(type) {
@@ -68,7 +70,7 @@ func (u *Usecase) CallVisit(request CallVisitFromDoctorQueue) (DoctorQueueRespon
 	case common.VisitNotFoundError:
 		return DoctorQueueResponse{}, err
 	case nil:
-		return DoctorQueueResponseFromDoctorQueue(queue), nil
+		return NewDoctorQueueFromRepr(repr).ToResponse(), nil
 	}
 	panic(err)
 
@@ -76,11 +78,12 @@ func (u *Usecase) CallVisit(request CallVisitFromDoctorQueue) (DoctorQueueRespon
 
 func (u *Usecase) CompleteDiagnosis(request CompleteDiagnosis) (DoctorQueueResponse, error) {
 
-	queue, err := u.DoctorQueueRepo.FindByDoctorIdAndUpdate(request.DoctorId, func(queue *DoctorQueue) (*DoctorQueue, error) {
+	repr, err := u.DoctorQueueRepo.FindByDoctorIdAndUpdate(request.DoctorId, func(repr *DoctorQueueRepr) (*DoctorQueueRepr, error) {
+		queue := NewDoctorQueueFromRepr(repr)
 		if err := queue.CompleteDiagnosis(); err != nil {
 			return nil, err
 		}
-		return queue, nil
+		return queue.ToRepr(), nil
 	})
 
 	switch err.(type) {
@@ -89,7 +92,7 @@ func (u *Usecase) CompleteDiagnosis(request CompleteDiagnosis) (DoctorQueueRespo
 	case NoVisitInProgressToCompleteError:
 		return DoctorQueueResponse{}, err
 	case nil:
-		return DoctorQueueResponseFromDoctorQueue(queue), nil
+		return NewDoctorQueueFromRepr(repr).ToResponse(), nil
 	}
 	panic(err)
 
@@ -97,13 +100,13 @@ func (u *Usecase) CompleteDiagnosis(request CompleteDiagnosis) (DoctorQueueRespo
 
 func (u *Usecase) CheckVisits(request CheckVisits) (DoctorQueueResponse, error) {
 
-	queue, err := u.DoctorQueueRepo.FindByDoctorId(request.DoctorId)
+	repr, err := u.DoctorQueueRepo.FindByDoctorId(request.DoctorId)
 
 	switch err.(type) {
 	case DoctorQueueNotFoundError:
 		return DoctorQueueResponse{}, err
 	case nil:
-		return DoctorQueueResponseFromDoctorQueue(queue), nil
+		return NewDoctorQueueFromRepr(repr).ToResponse(), nil
 	}
 	panic(err)
 }

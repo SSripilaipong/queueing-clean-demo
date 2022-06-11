@@ -42,7 +42,7 @@ func mapToStruct(payload map[string]any, e *clinical_diagnose.VisitAssessedEvent
 
 func handleVisitAssessedEvent(deps *Deps, e clinical_diagnose.VisitAssessedEvent) {
 	var err error
-	switch _, err = deps.ManageDoctorQueueUsecase.PushVisit(manage_doctor_queue.manage_doctor_queue{
+	switch _, err = deps.ManageDoctorQueueUsecase.PushVisit(manage_doctor_queue.PushVisitToDoctorQueue{
 		DoctorId:      "629c93cae6509bc3a7b1aaf7",
 		VisitId:       e.VisitId,
 		PatientName:   e.Name,

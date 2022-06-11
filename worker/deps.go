@@ -3,7 +3,7 @@ package worker
 import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"queueing-clean-demo/domain/contract"
-	"queueing-clean-demo/domain/manage_doctor_queue/contract"
+	"queueing-clean-demo/domain/usecase"
 	impl "queueing-clean-demo/implementation"
 )
 
@@ -13,7 +13,7 @@ type Deps struct {
 
 func createDeps(db *mongo.Database) *Deps {
 	return &Deps{
-		ManageDoctorQueueUsecase: manage_doctor_queue.manage_doctor_queue.NewUsecase(
+		ManageDoctorQueueUsecase: usecase.NewManageDoctorQueueUsecase(
 			&impl.DoctorQueueRepoInMongo{Collection: db.Collection("DoctorQueueRepo")},
 			impl.Clock{},
 		),

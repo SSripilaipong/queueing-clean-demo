@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"queueing-clean-demo/base"
-	v "queueing-clean-demo/domain/clinical_diagnose"
+	. "queueing-clean-demo/domain/clinical_diagnose/contract"
 	"queueing-clean-demo/domain/common/contract"
 )
 
@@ -14,11 +14,11 @@ type VisitRepoInMongo struct {
 	Collection *mongo.Collection
 }
 
-func (r *VisitRepoInMongo) FindByIdAndUpdate(id string, update func(visit *v.Visit) (*v.Visit, error)) (*v.Visit, error) {
-	var visit *v.Visit
+func (r *VisitRepoInMongo) FindByIdAndUpdate(id string, update func(visit *VisitRepr) (*VisitRepr, error)) (*VisitRepr, error) {
+	var visit *VisitRepr
 	var err error
 
-	if visit, err = base.OptimisticLockingRetry(20, func() (*v.Visit, error) {
+	if visit, err = base.OptimisticLockingRetry(20, func() (*VisitRepr, error) {
 		if visit, err = r.FindById(id); err != nil {
 			return nil, err
 		}
@@ -39,7 +39,7 @@ func (r *VisitRepoInMongo) FindByIdAndUpdate(id string, update func(visit *v.Vis
 	return visit, nil
 }
 
-func (r *VisitRepoInMongo) FindById(id string) (*v.Visit, error) {
+func (r *VisitRepoInMongo) FindById(id string) (*VisitRepr, error) {
 	var err error
 
 	var objectId primitive.ObjectID
@@ -53,7 +53,7 @@ func (r *VisitRepoInMongo) FindById(id string) (*v.Visit, error) {
 		return nil, common.VisitNotFoundError{}
 	}
 
-	visit := &v.Visit{}
+	visit := &VisitRepr{}
 	if err = DecodeDocument(result, visit); err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (r *VisitRepoInMongo) FindById(id string) (*v.Visit, error) {
 	return visit, nil
 }
 
-func (r *VisitRepoInMongo) Save(visit *v.Visit) (*v.Visit, error) {
+func (r *VisitRepoInMongo) Save(visit *VisitRepr) (*VisitRepr, error) {
 	var err error
 
 	var objectId primitive.ObjectID
@@ -71,7 +71,7 @@ func (r *VisitRepoInMongo) Save(visit *v.Visit) (*v.Visit, error) {
 	filter := bson.D{{"_id", objectId}, {"_version", visit.GetVersion()}}
 
 	var document map[string]any
-	if document, err = makeDocument(visit.Id, visit.GetVersion()+1, visit, err); err != nil {
+	if document, err = MakeDocument(visit.Id, visit); err != nil {
 		return nil, err
 	}
 
@@ -89,11 +89,11 @@ func (r *VisitRepoInMongo) Save(visit *v.Visit) (*v.Visit, error) {
 	return visit, nil
 }
 
-func (r *VisitRepoInMongo) Create(visit *v.Visit) (*v.Visit, error) {
+func (r *VisitRepoInMongo) Create(visit *VisitRepr) (*VisitRepr, error) {
 	var err error
 	var document map[string]any
 
-	if document, err = makeDocument(visit.Id, visit.GetVersion(), visit, err); err != nil {
+	if document, err = MakeDocument(visit.Id, visit); err != nil {
 		return nil, err
 	}
 

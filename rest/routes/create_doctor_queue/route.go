@@ -9,7 +9,7 @@ import (
 )
 
 func Route(ctx *gin.Context, deps *d.RestDeps) ext.Response {
-	return ext.Endpoint(ctx, makeRequest, func(req manage_doctor_queue.manage_doctor_queue) ext.Response {
+	return ext.Endpoint(ctx, makeRequest, func(req manage_doctor_queue.CreateDoctorQueue) ext.Response {
 
 		_, err := deps.ManageDoctorQueueUsecase.CreateDoctorQueue(req)
 

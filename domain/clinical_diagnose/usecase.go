@@ -1,7 +1,7 @@
 package _clinical_diagnose
 
 import (
-	"queueing-clean-demo/domain/clinical_diagnose/contract"
+	. "queueing-clean-demo/domain/clinical_diagnose/contract"
 	"queueing-clean-demo/domain/clinical_diagnose/deps"
 	"queueing-clean-demo/domain/common/contract"
 )
@@ -11,42 +11,45 @@ type Usecase struct {
 	IdGenerator _deps.IIdGenerator
 }
 
-func (u *Usecase) CreateVisit(request clinical_diagnose.CreateVisit) (clinical_diagnose.VisitResponse, error) {
+func (u *Usecase) CreateVisit(request CreateVisit) (VisitResponse, error) {
 
 TryCreateVisit:
 	id := u.IdGenerator.GetId()
 	visit, err := NewVisit(id, request.Name, request.Gender, request.Age)
 	if err == nil {
-		visit, err = u.VisitRepo.Create(visit)
+		repr := visit.ToRepr()
+		_, err = u.VisitRepo.Create(&repr)
 	}
 
 	switch err.(type) {
 	case common.DuplicateVisitIdError:
 		goto TryCreateVisit
 	case common.InvalidVisitDataError:
-		return clinical_diagnose.VisitResponse{}, err
+		return VisitResponse{}, err
 	case nil:
 		return VisitResponseFromVisit(visit), nil
 	}
 	panic(err)
 }
 
-func (u *Usecase) SubmitAssessment(request clinical_diagnose.SubmitAssessment) (clinical_diagnose.VisitResponse, error) {
+func (u *Usecase) SubmitAssessment(request SubmitAssessment) (VisitResponse, error) {
 
-	visit, err := u.VisitRepo.FindByIdAndUpdate(request.VisitId, func(visit *Visit) (*Visit, error) {
+	repr, err := u.VisitRepo.FindByIdAndUpdate(request.VisitId, func(repr *VisitRepr) (*VisitRepr, error) {
+		visit := NewVisitFromRepr(*repr)
 		if err := visit.SubmitAssessment(AssessmentFromSubmitAssessmentRequest(request)); err != nil {
 			return nil, err
 		}
-		return visit, nil
+		result := visit.ToRepr()
+		return &result, nil
 	})
 
 	switch err.(type) {
 	case common.VisitNotFoundError:
-		return clinical_diagnose.VisitResponse{}, err
-	case clinical_diagnose.AssessmentAlreadyExistError:
-		return clinical_diagnose.VisitResponse{}, err
+		return VisitResponse{}, err
+	case AssessmentAlreadyExistError:
+		return VisitResponse{}, err
 	case nil:
-		return VisitResponseFromVisit(visit), nil
+		return VisitResponseFromVisit(NewVisitFromRepr(*repr)), nil
 	}
 	panic(err)
 }

@@ -3,6 +3,7 @@ package push_visit_to_doctor_queue
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"queueing-clean-demo/domain/manage_doctor_queue/contract"
 	d "queueing-clean-demo/rest/deps"
 	"queueing-clean-demo/rest/ext"
 )

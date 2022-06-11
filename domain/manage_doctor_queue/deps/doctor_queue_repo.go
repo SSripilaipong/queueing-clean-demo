@@ -1,11 +1,11 @@
 package _deps
 
 import (
-	. "queueing-clean-demo/domain/manage_doctor_queue"
+	. "queueing-clean-demo/domain/manage_doctor_queue/contract"
 )
 
 type IDoctorQueueRepo interface {
-	Create(queue *DoctorQueue) (*DoctorQueue, error)
-	FindByDoctorIdAndUpdate(doctorId string, update func(queue *DoctorQueue) (*DoctorQueue, error)) (*DoctorQueue, error)
-	FindByDoctorId(doctorId string) (*DoctorQueue, error)
+	Create(queue *DoctorQueueRepr) (*DoctorQueueRepr, error)
+	FindByDoctorIdAndUpdate(doctorId string, update func(queue *DoctorQueueRepr) (*DoctorQueueRepr, error)) (*DoctorQueueRepr, error)
+	FindByDoctorId(doctorId string) (*DoctorQueueRepr, error)
 }

@@ -47,3 +47,45 @@ func (v *Visit) SubmitAssessment(assessment Assessment) error {
 	})
 	return nil
 }
+
+func (v *Visit) ToRepr() clinical_diagnose.VisitRepr {
+	var assessment *clinical_diagnose.AssessmentRepr
+	if v.Assessment != nil {
+		assessment = &clinical_diagnose.AssessmentRepr{
+			NursingAssessment: v.Assessment.NursingAssessment,
+			PainScore:         v.Assessment.PainScore,
+		}
+	}
+
+	return clinical_diagnose.VisitRepr{
+		Id:         v.Id,
+		Name:       v.Name,
+		Gender:     v.Gender,
+		Age:        v.Age,
+		Assessment: assessment,
+		AggregateRepr: base.AggregateRepr{
+			Version: v.GetVersion(),
+			Events:  v.GetEvents(),
+		},
+	}
+}
+
+func NewVisitFromRepr(repr clinical_diagnose.VisitRepr) *Visit {
+	var assessment *Assessment
+	if repr.Assessment != nil {
+		assessment = &Assessment{
+			NursingAssessment: repr.Assessment.NursingAssessment,
+			PainScore:         repr.Assessment.PainScore,
+		}
+	}
+	visit := &Visit{
+		Aggregate:  base.Aggregate{},
+		Id:         repr.Id,
+		Name:       repr.Name,
+		Gender:     repr.Gender,
+		Age:        repr.Age,
+		Assessment: assessment,
+	}
+	visit.SetVersion(repr.Version)
+	return visit
+}

@@ -10,7 +10,7 @@ type SubmitAssessment struct {
 	PainScore         int    `json:"painScore"`
 }
 
-func makeRequest(ctx *gin.Context) (clinical_diagnose.clinical_diagnose, error) {
+func makeRequest(ctx *gin.Context) (clinical_diagnose.SubmitAssessment, error) {
 	visitId := ctx.Param("visitId")
 
 	var body SubmitAssessment

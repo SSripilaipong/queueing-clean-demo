@@ -12,7 +12,7 @@ type PushVisit struct {
 	PatientAge    int
 }
 
-func makeRequest(ctx *gin.Context) (manage_doctor_queue.manage_doctor_queue, error) {
+func makeRequest(ctx *gin.Context) (manage_doctor_queue.PushVisitToDoctorQueue, error) {
 	doctorId := ctx.Param("doctorId")
 
 	var body PushVisit

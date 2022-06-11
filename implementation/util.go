@@ -3,47 +3,60 @@ package implementation
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"queueing-clean-demo/base"
 	"reflect"
 )
 
-func DecodeDocument[T base.IAggregate](result *mongo.SingleResult, object T) error {
-	var err error
-	var m map[string]any
-	if err = result.Decode(&m); err != nil {
+func DecodeDocument(result *mongo.SingleResult, ptr any) (err error) {
+	var ok bool
+
+	var doc map[string]any
+	if err = result.Decode(&doc); err != nil {
 		return err
+	}
+
+	var obj map[string]any
+	if obj, ok = doc["payload"].(map[string]any); !ok {
+		return fmt.Errorf("unexpected error")
+	}
+
+	obj["_aggregate"] = map[string]any{
+		"_version":      doc["_version"],
+		"_latestEvents": doc["_latestEvents"],
 	}
 
 	var j []byte
-	payload := m["payload"]
-	if j, err = json.Marshal(payload); err != nil {
+	if j, err = json.Marshal(obj); err != nil {
 		return err
 	}
 
-	if err = json.Unmarshal(j, &object); err != nil {
+	if err = json.Unmarshal(j, ptr); err != nil {
 		return err
 	}
-
-	object.SetVersion(int(m["_version"].(int32)))
 	return nil
 }
 
-func makeDocument(id string, version int, aggregate base.IAggregate, err error) (map[string]any, error) {
-	document := make(map[string]any)
+func MakeDocument(id string, aggregate base.IAggregateRepr) (doc map[string]any, err error) {
+	doc = make(map[string]any)
+	var payload map[string]any
+	payload, err = structToMap(aggregate)
+	delete(payload, "_aggregate")
 
-	if document["payload"], err = structToMap(aggregate); err != nil {
+	doc["payload"] = payload
+	doc["_version"] = aggregate.GetVersion()
+	doc["_latestEvents"], err = makeEvents(aggregate.GetEvents())
+	if err != nil {
 		return nil, err
 	}
-	if document["_id"], err = primitive.ObjectIDFromHex(id); err != nil {
+
+	if doc["_id"], err = primitive.ObjectIDFromHex(id); err != nil {
 		return nil, err
 	}
-	if document["_latestEvents"], err = makeEvents(aggregate.GetEvents()); err != nil {
-		return nil, err
-	}
-	document["_version"] = version
-	return document, nil
+
+	return doc, nil
 }
 
 func makeEvents(events []base.IEvent) ([]map[string]any, error) {

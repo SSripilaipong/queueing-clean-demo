@@ -10,7 +10,7 @@ import (
 )
 
 func Route(ctx *gin.Context, deps *d.RestDeps) ext.Response {
-	return ext.Endpoint(ctx, makeRequest, func(req clinical_diagnose.clinical_diagnose) ext.Response {
+	return ext.Endpoint(ctx, makeRequest, func(req clinical_diagnose.CreateVisit) ext.Response {
 
 		visit, err := deps.ClinicalDiagnoseUsecase.CreateVisit(req)
 
