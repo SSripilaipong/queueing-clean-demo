@@ -1,4 +1,4 @@
-package _deps
+package clinical_diagnose
 
 type IIdGenerator interface {
 	GetId() string

@@ -1,4 +1,4 @@
-package _deps
+package manage_doctor_queue
 
 import (
 	"time"

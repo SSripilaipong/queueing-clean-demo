@@ -2,13 +2,12 @@ package _clinical_diagnose
 
 import (
 	. "queueing-clean-demo/domain/clinical_diagnose/contract"
-	"queueing-clean-demo/domain/clinical_diagnose/deps"
 	"queueing-clean-demo/domain/common/contract"
 )
 
 type Usecase struct {
-	VisitRepo   _deps.IVisitRepo
-	IdGenerator _deps.IIdGenerator
+	VisitRepo   IVisitRepo
+	IdGenerator IIdGenerator
 }
 
 func (u *Usecase) CreateVisit(request CreateVisit) (VisitResponse, error) {

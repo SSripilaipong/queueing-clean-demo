@@ -1,14 +1,13 @@
 package _manage_doctor_queue
 
 import (
-	common "queueing-clean-demo/domain/common/contract"
+	"queueing-clean-demo/domain/common/contract"
 	. "queueing-clean-demo/domain/manage_doctor_queue/contract"
-	"queueing-clean-demo/domain/manage_doctor_queue/deps"
 )
 
 type Usecase struct {
-	DoctorQueueRepo _deps.IDoctorQueueRepo
-	Clock           _deps.IClock
+	DoctorQueueRepo IDoctorQueueRepo
+	Clock           IClock
 }
 
 func (u *Usecase) CreateDoctorQueue(request CreateDoctorQueue) (DoctorQueueResponse, error) {

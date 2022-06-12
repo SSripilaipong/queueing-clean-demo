@@ -1,8 +1,4 @@
-package _deps
-
-import (
-	. "queueing-clean-demo/domain/manage_doctor_queue/contract"
-)
+package manage_doctor_queue
 
 type IDoctorQueueRepo interface {
 	Create(queue *DoctorQueueRepr) (*DoctorQueueRepr, error)

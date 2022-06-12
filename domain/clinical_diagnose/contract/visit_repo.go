@@ -1,8 +1,4 @@
-package _deps
-
-import (
-	. "queueing-clean-demo/domain/clinical_diagnose/contract"
-)
+package clinical_diagnose
 
 type IVisitRepo interface {
 	FindByIdAndUpdate(id string, update func(visit *VisitRepr) (*VisitRepr, error)) (*VisitRepr, error)
