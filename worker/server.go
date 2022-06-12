@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/streadway/amqp"
 	"queueing-clean-demo/base"
 	d "queueing-clean-demo/worker/deps"
@@ -32,7 +33,15 @@ func (s *server) Start() {
 	go s.serve()
 }
 
+func (s *server) Stop() error {
+	s.cancel()
+	<-s.exited
+	return nil
+}
+
 func (s *server) serve() {
+	fmt.Println("worker started")
+
 	deps := s.depsFactory()
 	defer deps.Destroy()
 
@@ -48,10 +57,7 @@ func (s *server) serve() {
 			panic(err)
 		}
 	})
-}
 
-func (s *server) Stop() error {
-	s.cancel()
-	<-s.exited
-	return nil
+	s.exited <- struct{}{}
+	fmt.Println("worker exited")
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"queueing-clean-demo/app/deps"
+	"queueing-clean-demo/base"
 	"queueing-clean-demo/outbox"
 	"queueing-clean-demo/rest"
 	"queueing-clean-demo/worker"
@@ -14,27 +15,25 @@ import (
 func StartApp() {
 	SetupMessageBroker()
 
-	outboxServer := outbox.NewServer(deps.NewOutboxDeps, "allEvents")
-	workerServer := worker.NewServer(deps.NewWorkerDeps, "allEvents")
-	restServer := rest.NewServer(deps.NewRestDeps, "8080")
+	servers := []base.IServer{
+		outbox.NewServer(deps.NewOutboxDeps, "allEvents"),
+		worker.NewServer(deps.NewWorkerDeps, "allEvents"),
+		rest.NewServer(deps.NewRestDeps, "8080"),
+	}
 
 	isInterrupted := makeStopSignal()
 
-	outboxServer.Start()
-	workerServer.Start()
-	restServer.Start()
+	for _, server := range servers {
+		server.Start()
+	}
 
 	<-isInterrupted
-
 	fmt.Println("exiting")
-	if err := restServer.Stop(); err != nil {
-		println(err.Error())
-	}
-	if err := workerServer.Stop(); err != nil {
-		println(err.Error())
-	}
-	if err := outboxServer.Stop(); err != nil {
-		println(err.Error())
+
+	for i := len(servers) - 1; i >= 0; i-- {
+		if err := servers[i].Stop(); err != nil {
+			println(err.Error())
+		}
 	}
 }
 

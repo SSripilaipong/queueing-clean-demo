@@ -38,6 +38,8 @@ func (s *server) Stop() error {
 }
 
 func (s *server) serve() {
+	fmt.Println("outbox started")
+
 	deps := s.depsFactory()
 	defer deps.Destroy()
 

@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"fmt"
 	"github.com/rs/cors"
 	"net/http"
 	"queueing-clean-demo/base"
@@ -38,6 +39,8 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) serve() {
+	fmt.Println("rest started")
+
 	restDeps := s.depsFactory()
 	defer restDeps.Destroy()
 
@@ -47,4 +50,6 @@ func (s *Server) serve() {
 	if err != nil && err != http.ErrServerClosed {
 		panic(err)
 	}
+
+	fmt.Println("rest exited")
 }
