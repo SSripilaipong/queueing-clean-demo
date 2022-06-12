@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### submit assessment to visit
-PUT http://localhost:8080/his/visits/62a5b019c1b150a92c5a50a8/assessment
+PUT http://localhost:8080/his/visits/62a5b50689b7b2dd7716d142/assessment
 Content-Type: application/json
 
 {

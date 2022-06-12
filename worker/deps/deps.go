@@ -1,4 +1,4 @@
-package worker
+package worker_deps
 
 import (
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,7 +11,7 @@ type Deps struct {
 	ManageDoctorQueueUsecase domain.IManageDoctorQueueUsecase
 }
 
-func createDeps(db *mongo.Database) *Deps {
+func CreateDeps(db *mongo.Database) *Deps {
 	return &Deps{
 		ManageDoctorQueueUsecase: usecase.NewManageDoctorQueueUsecase(
 			impl.NewDoctorQueueRepoInMongo(db.Collection("DoctorQueueRepo")),
