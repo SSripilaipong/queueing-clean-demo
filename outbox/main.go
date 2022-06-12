@@ -54,7 +54,7 @@ func extractLatestEvents(data map[string]any) []any {
 	return events
 }
 
-func RunOutboxRelay(ctx context.Context) {
+func RunOutboxRelay(ctx context.Context, exited chan struct{}) {
 	rbConn, rbCh := makeChannel()
 	defer rbConn.Close()
 	defer rbCh.Close()
@@ -72,6 +72,8 @@ func RunOutboxRelay(ctx context.Context) {
 	}
 
 	relayLoop(ctx, rbCh, stream)
+	exited <- struct{}{}
+	fmt.Println("outbox exited")
 }
 
 func publishEvents(ch *amqp.Channel, array []any) {
