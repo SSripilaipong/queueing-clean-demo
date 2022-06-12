@@ -2,7 +2,7 @@ package _manage_doctor_queue
 
 import (
 	"queueing-clean-demo/base"
-	"queueing-clean-demo/domain/common/contract"
+	"queueing-clean-demo/domain/common"
 	manage_doctor_queue2 "queueing-clean-demo/domain/manage_doctor_queue"
 	"time"
 )

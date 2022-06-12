@@ -2,7 +2,7 @@ package internal
 
 import (
 	. "queueing-clean-demo/domain/clinical_diagnose"
-	"queueing-clean-demo/domain/common/contract"
+	"queueing-clean-demo/domain/common"
 )
 
 type Usecase struct {

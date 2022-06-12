@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"queueing-clean-demo/base"
 	. "queueing-clean-demo/domain/clinical_diagnose"
-	"queueing-clean-demo/domain/common/contract"
+	"queueing-clean-demo/domain/common"
 )
 
 type VisitRepoInMongo struct {

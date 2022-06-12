@@ -1,7 +1,7 @@
 package deps
 
 import (
-	"queueing-clean-demo/domain/contract"
+	"queueing-clean-demo/domain"
 )
 
 type RestDeps struct {

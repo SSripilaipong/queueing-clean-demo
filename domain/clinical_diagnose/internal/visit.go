@@ -3,7 +3,7 @@ package internal
 import (
 	"queueing-clean-demo/base"
 	clinical_diagnose2 "queueing-clean-demo/domain/clinical_diagnose"
-	"queueing-clean-demo/domain/common/contract"
+	"queueing-clean-demo/domain/common"
 )
 
 type Visit struct {
