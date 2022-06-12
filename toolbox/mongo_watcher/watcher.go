@@ -30,10 +30,6 @@ func NewWatcher(username string, password string, host string, port string, dbNa
 	}
 }
 
-func (w *MongoWatcher) Stream() *mongo.ChangeStream {
-	return w.stream
-}
-
 func (w *MongoWatcher) Next(ctx context.Context) bool {
 	return w.stream.Next(ctx)
 }

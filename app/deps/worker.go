@@ -1,7 +1,8 @@
-package app
+package deps
 
 import (
 	"context"
+	connection2 "queueing-clean-demo/app/connection"
 	"queueing-clean-demo/domain"
 	"queueing-clean-demo/domain/manage_doctor_queue/usecase"
 	"queueing-clean-demo/implementation"
@@ -16,9 +17,9 @@ type workerDeps struct {
 	manageDoctorQueue domain.IManageDoctorQueueUsecase
 }
 
-func newWorkerDeps() d.IWorkerDeps {
-	connection := makeMongoDbConnection()
-	rabbit := makeRabbitMQClient()
+func NewWorkerDeps() d.IWorkerDeps {
+	connection := connection2.MakeMongoDbConnection()
+	rabbit := connection2.MakeRabbitMQClient()
 
 	db := connection.Client.Database("OPD")
 
@@ -36,7 +37,7 @@ func (d *workerDeps) ManageDoctorQueue() domain.IManageDoctorQueueUsecase {
 	return d.manageDoctorQueue
 }
 
-func (d *workerDeps) Broker() d.IBroker {
+func (d *workerDeps) Broker() d.ISubscriber {
 	return d.rabbit
 }
 

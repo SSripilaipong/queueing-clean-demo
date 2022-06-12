@@ -8,10 +8,10 @@ import (
 
 type IWorkerDeps interface {
 	ManageDoctorQueue() domain.IManageDoctorQueueUsecase
-	Broker() IBroker
+	Broker() ISubscriber
 	Destroy()
 }
 
-type IBroker interface {
+type ISubscriber interface {
 	Subscribe(ctx context.Context, key string, handle func(amqp.Delivery))
 }

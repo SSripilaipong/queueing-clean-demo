@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 	"github.com/streadway/amqp"
 	"queueing-clean-demo/base"
+	d "queueing-clean-demo/worker/deps"
 )
 
 type server struct {
 	topicName   string
-	depsFactory func() deps.IWorkerDeps
+	depsFactory func() d.IWorkerDeps
 	ctx         context.Context
 	cancel      context.CancelFunc
 	exited      chan struct{}
 }
 
-func NewServer(depsFactory func() deps.IWorkerDeps, topicName string) base.IServer {
+func NewServer(depsFactory func() d.IWorkerDeps, topicName string) base.IServer {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	return &server{

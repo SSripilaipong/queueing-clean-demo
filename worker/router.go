@@ -2,6 +2,7 @@ package worker
 
 import (
 	"queueing-clean-demo/domain/clinical_diagnose"
+	"queueing-clean-demo/worker/deps"
 	"queueing-clean-demo/worker/handler/visit_assessed"
 )
 

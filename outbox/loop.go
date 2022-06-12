@@ -2,10 +2,10 @@ package outbox
 
 import (
 	"context"
-	"queueing-clean-demo/toolbox/mongo_watcher"
+	"queueing-clean-demo/outbox/deps"
 )
 
-func watcherLoop(ctx context.Context, watcher *mongo_watcher.MongoWatcher, handle func(data map[string]any)) {
+func watcherLoop(ctx context.Context, watcher deps.IStream, handle func(data map[string]any)) {
 	running := true
 	for running && watcher.Next(ctx) {
 		data := watcher.Get()

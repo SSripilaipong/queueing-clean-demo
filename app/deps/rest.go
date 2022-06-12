@@ -1,7 +1,8 @@
-package app
+package deps
 
 import (
 	"context"
+	connection2 "queueing-clean-demo/app/connection"
 	"queueing-clean-demo/domain"
 	. "queueing-clean-demo/domain/clinical_diagnose/usecase"
 	. "queueing-clean-demo/domain/manage_doctor_queue/usecase"
@@ -16,8 +17,8 @@ type restDeps struct {
 	manageDoctorQueue domain.IManageDoctorQueueUsecase
 }
 
-func newRestDeps() d.IRestDeps {
-	connection := makeMongoDbConnection()
+func NewRestDeps() d.IRestDeps {
+	connection := connection2.MakeMongoDbConnection()
 
 	database := connection.Client.Database("OPD")
 

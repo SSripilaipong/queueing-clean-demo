@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"queueing-clean-demo/app/deps"
 	"queueing-clean-demo/outbox"
 	"queueing-clean-demo/rest"
 	"queueing-clean-demo/worker"
@@ -13,9 +14,9 @@ import (
 func StartApp() {
 	SetupMessageBroker()
 
-	outboxServer := outbox.NewServer()
-	workerServer := worker.NewServer(newWorkerDeps, "allEvents")
-	restServer := rest.NewServer(newRestDeps, "8080")
+	outboxServer := outbox.NewServer(deps.NewOutboxDeps, "allEvents")
+	workerServer := worker.NewServer(deps.NewWorkerDeps, "allEvents")
+	restServer := rest.NewServer(deps.NewRestDeps, "8080")
 
 	isInterrupted := makeStopSignal()
 

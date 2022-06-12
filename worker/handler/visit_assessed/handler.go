@@ -3,6 +3,7 @@ package visit_assessed
 import (
 	"queueing-clean-demo/domain/clinical_diagnose"
 	"queueing-clean-demo/domain/manage_doctor_queue"
+	"queueing-clean-demo/worker/deps"
 )
 
 func Handler(deps deps.IWorkerDeps, e clinical_diagnose.VisitAssessedEvent) {
