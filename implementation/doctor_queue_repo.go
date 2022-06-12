@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"queueing-clean-demo/base"
-	. "queueing-clean-demo/domain/manage_doctor_queue/contract"
+	. "queueing-clean-demo/domain/manage_doctor_queue"
 )
 
 type DoctorQueueRepoInMongo struct {

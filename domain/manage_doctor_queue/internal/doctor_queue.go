@@ -3,7 +3,7 @@ package _manage_doctor_queue
 import (
 	"queueing-clean-demo/base"
 	"queueing-clean-demo/domain/common/contract"
-	"queueing-clean-demo/domain/manage_doctor_queue/contract"
+	manage_doctor_queue2 "queueing-clean-demo/domain/manage_doctor_queue"
 	"time"
 )
 
@@ -28,7 +28,7 @@ func NewDoctorQueue(doctorId string) (*DoctorQueue, error) {
 
 func (q *DoctorQueue) PushVisit(visit VisitShortInfo) error {
 	if q.Visits.hasVisit(visit.Id) {
-		return manage_doctor_queue.VisitAlreadyExistsError{}
+		return manage_doctor_queue2.VisitAlreadyExistsError{}
 	}
 	q.Visits.add(visit)
 	return nil
@@ -36,7 +36,7 @@ func (q *DoctorQueue) PushVisit(visit VisitShortInfo) error {
 
 func (q *DoctorQueue) CallVisit(id string) error {
 	if q.VisitInProgress != nil {
-		return manage_doctor_queue.DoctorStillBusyError{}
+		return manage_doctor_queue2.DoctorStillBusyError{}
 	}
 	if !q.Visits.hasVisit(id) {
 		return common.VisitNotFoundError{}
@@ -48,17 +48,17 @@ func (q *DoctorQueue) CallVisit(id string) error {
 
 func (q *DoctorQueue) CompleteDiagnosis() error {
 	if q.VisitInProgress == nil {
-		return manage_doctor_queue.NoVisitInProgressToCompleteError{}
+		return manage_doctor_queue2.NoVisitInProgressToCompleteError{}
 	}
 	q.VisitInProgress = nil
 	return nil
 }
 
-func (q *DoctorQueue) ToResponse() manage_doctor_queue.DoctorQueueResponse {
-	visits := make([]manage_doctor_queue.VisitShortInfoResponse, len(q.Visits.Queue))
+func (q *DoctorQueue) ToResponse() manage_doctor_queue2.DoctorQueueResponse {
+	visits := make([]manage_doctor_queue2.VisitShortInfoResponse, len(q.Visits.Queue))
 	i := 0
 	for _, v := range q.Visits.Queue {
-		visits[i] = manage_doctor_queue.VisitShortInfoResponse{
+		visits[i] = manage_doctor_queue2.VisitShortInfoResponse{
 			Id:        v.Id,
 			Name:      v.Name,
 			Gender:    v.Gender,
@@ -68,9 +68,9 @@ func (q *DoctorQueue) ToResponse() manage_doctor_queue.DoctorQueueResponse {
 		i++
 	}
 
-	var visitInProgress manage_doctor_queue.VisitShortInfoResponse
+	var visitInProgress manage_doctor_queue2.VisitShortInfoResponse
 	if vip := q.VisitInProgress; vip != nil {
-		visitInProgress = manage_doctor_queue.VisitShortInfoResponse{
+		visitInProgress = manage_doctor_queue2.VisitShortInfoResponse{
 			Id:        vip.Id,
 			Name:      vip.Name,
 			Gender:    vip.Gender,
@@ -79,17 +79,17 @@ func (q *DoctorQueue) ToResponse() manage_doctor_queue.DoctorQueueResponse {
 		}
 	}
 
-	repr := manage_doctor_queue.DoctorQueueResponse{
+	repr := manage_doctor_queue2.DoctorQueueResponse{
 		Visits:          visits,
 		VisitInProgress: visitInProgress,
 	}
 	return repr
 }
 
-func (q *DoctorQueue) ToRepr() *manage_doctor_queue.DoctorQueueRepr {
-	visits := make(map[string]manage_doctor_queue.VisitShortInfoRepr)
+func (q *DoctorQueue) ToRepr() *manage_doctor_queue2.DoctorQueueRepr {
+	visits := make(map[string]manage_doctor_queue2.VisitShortInfoRepr)
 	for k, v := range q.Visits.Queue {
-		visits[k] = manage_doctor_queue.VisitShortInfoRepr{
+		visits[k] = manage_doctor_queue2.VisitShortInfoRepr{
 			Id:        v.Id,
 			Name:      v.Name,
 			Gender:    v.Gender,
@@ -98,9 +98,9 @@ func (q *DoctorQueue) ToRepr() *manage_doctor_queue.DoctorQueueRepr {
 		}
 	}
 
-	var visitInProgress *manage_doctor_queue.VisitShortInfoRepr
+	var visitInProgress *manage_doctor_queue2.VisitShortInfoRepr
 	if vip := q.VisitInProgress; vip != nil {
-		visitInProgress = &manage_doctor_queue.VisitShortInfoRepr{
+		visitInProgress = &manage_doctor_queue2.VisitShortInfoRepr{
 			Id:        vip.Id,
 			Name:      vip.Name,
 			Gender:    vip.Gender,
@@ -109,7 +109,7 @@ func (q *DoctorQueue) ToRepr() *manage_doctor_queue.DoctorQueueRepr {
 		}
 	}
 
-	repr := &manage_doctor_queue.DoctorQueueRepr{
+	repr := &manage_doctor_queue2.DoctorQueueRepr{
 		AggregateRepr: base.AggregateRepr{
 			Version: q.GetVersion(),
 			Events:  q.GetEvents(),
@@ -121,7 +121,7 @@ func (q *DoctorQueue) ToRepr() *manage_doctor_queue.DoctorQueueRepr {
 	return repr
 }
 
-func NewDoctorQueueFromRepr(repr *manage_doctor_queue.DoctorQueueRepr) *DoctorQueue {
+func NewDoctorQueueFromRepr(repr *manage_doctor_queue2.DoctorQueueRepr) *DoctorQueue {
 	visits := make(map[string]VisitShortInfo)
 	for k, v := range repr.Visits {
 		visits[k] = VisitShortInfo{

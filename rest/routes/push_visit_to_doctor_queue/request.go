@@ -2,7 +2,7 @@ package push_visit_to_doctor_queue
 
 import (
 	"github.com/gin-gonic/gin"
-	"queueing-clean-demo/domain/manage_doctor_queue/contract"
+	"queueing-clean-demo/domain/manage_doctor_queue"
 )
 
 type PushVisit struct {

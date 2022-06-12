@@ -3,18 +3,18 @@ package check_visits
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"queueing-clean-demo/domain/manage_doctor_queue/contract"
+	manage_doctor_queue2 "queueing-clean-demo/domain/manage_doctor_queue"
 	d "queueing-clean-demo/rest/deps"
 	"queueing-clean-demo/rest/ext"
 )
 
 func Route(ctx *gin.Context, deps *d.RestDeps) ext.Response {
-	return ext.Endpoint(ctx, makeRequest, func(req manage_doctor_queue.CheckVisits) ext.Response {
+	return ext.Endpoint(ctx, makeRequest, func(req manage_doctor_queue2.CheckVisits) ext.Response {
 
 		queue, err := deps.ManageDoctorQueueUsecase.CheckVisits(req)
 
 		switch err.(type) {
-		case manage_doctor_queue.DoctorQueueNotFoundError:
+		case manage_doctor_queue2.DoctorQueueNotFoundError:
 			return ext.Response{Code: http.StatusNotFound, Body: gin.H{"message": "doctor queue not found"}}
 		case nil:
 			return ext.Response{Code: http.StatusOK, Body: queue}
