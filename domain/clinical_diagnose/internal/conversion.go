@@ -1,4 +1,4 @@
-package _clinical_diagnose
+package internal
 
 import (
 	"queueing-clean-demo/domain/clinical_diagnose/contract"
