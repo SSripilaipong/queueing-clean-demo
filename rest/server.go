@@ -2,23 +2,33 @@ package rest
 
 import (
 	"context"
+	"github.com/rs/cors"
 	"net/http"
+	"queueing-clean-demo/base"
 	"queueing-clean-demo/rest/deps"
 	"time"
 )
 
 type Server struct {
-	Deps   *deps.RestDeps
-	server *http.Server
+	deps         *deps.RestDeps
+	port         string
+	corsHandler  *cors.Cors
+	readTimeout  time.Duration
+	writeTimeout time.Duration
+	server       *http.Server
 }
 
-func (s *Server) Start(port string) {
-	corsHandler := newCorsHandler()
+func NewServer(deps *deps.RestDeps, port string) base.IServer {
+	return &Server{
+		deps:         deps,
+		port:         port,
+		corsHandler:  newCorsHandler(),
+		readTimeout:  180 * time.Second,
+		writeTimeout: 180 * time.Second,
+	}
+}
 
-	readTimeout := 180 * time.Second
-	writeTimeout := 180 * time.Second
-
-	s.server = newHttpServer(port, getApiRouter(s.Deps), corsHandler, readTimeout, writeTimeout)
+func (s *Server) Start() {
 	go s.serve()
 }
 
@@ -28,6 +38,8 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) serve() {
+	s.server = newHttpServer(s.port, getApiRouter(s.deps), s.corsHandler, s.readTimeout, s.writeTimeout)
+
 	err := s.server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		panic(err)

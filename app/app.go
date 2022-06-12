@@ -19,13 +19,13 @@ func StartApp() {
 	defer connection.Disconnect(context.Background())
 
 	deps := createRestDeps(connection.Client.Database("OPD"))
-	restServer := rest.Server{Deps: &deps}
+	restServer := rest.NewServer(&deps, "8080")
 	outboxServer := outbox.NewServer()
 	workerServer := worker.NewServer()
 
 	isInterrupted := makeStopSignal()
 
-	restServer.Start("8080")
+	restServer.Start()
 	outboxServer.Start()
 	workerServer.Start()
 
@@ -41,12 +41,6 @@ func StartApp() {
 	if err := workerServer.Stop(); err != nil {
 		println(err.Error())
 	}
-}
-
-func makeRoutineController() (chan os.Signal, context.Context, context.CancelFunc) {
-	stop := makeStopSignal()
-	child, cancel := context.WithCancel(context.Background())
-	return stop, child, cancel
 }
 
 func makeMongoDbConnection() *mongodb.Connection {
