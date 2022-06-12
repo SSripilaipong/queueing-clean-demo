@@ -1,21 +1,17 @@
-package worker_deps
+package deps
 
 import (
-	"go.mongodb.org/mongo-driver/mongo"
+	"context"
+	"github.com/streadway/amqp"
 	"queueing-clean-demo/domain"
-	"queueing-clean-demo/domain/manage_doctor_queue/usecase"
-	impl "queueing-clean-demo/implementation"
 )
 
-type Deps struct {
-	ManageDoctorQueueUsecase domain.IManageDoctorQueueUsecase
+type IWorkerDeps interface {
+	ManageDoctorQueue() domain.IManageDoctorQueueUsecase
+	Broker() IBroker
+	Destroy()
 }
 
-func CreateDeps(db *mongo.Database) *Deps {
-	return &Deps{
-		ManageDoctorQueueUsecase: usecase.NewManageDoctorQueueUsecase(
-			impl.NewDoctorQueueRepoInMongo(db.Collection("DoctorQueueRepo")),
-			impl.Clock{},
-		),
-	}
+type IBroker interface {
+	Subscribe(ctx context.Context, key string, handle func(amqp.Delivery))
 }

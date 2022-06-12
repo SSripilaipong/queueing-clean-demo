@@ -3,11 +3,10 @@ package visit_assessed
 import (
 	"queueing-clean-demo/domain/clinical_diagnose"
 	"queueing-clean-demo/domain/manage_doctor_queue"
-	"queueing-clean-demo/worker/deps"
 )
 
-func Handler(deps *worker_deps.Deps, e clinical_diagnose.VisitAssessedEvent) {
-	_, err := deps.ManageDoctorQueueUsecase.PushVisit(manage_doctor_queue.PushVisitToDoctorQueue{
+func Handler(deps deps.IWorkerDeps, e clinical_diagnose.VisitAssessedEvent) {
+	_, err := deps.ManageDoctorQueue().PushVisit(manage_doctor_queue.PushVisitToDoctorQueue{
 		DoctorId:      "629c93cae6509bc3a7b1aaf7", // fixed for simplicity
 		VisitId:       e.VisitId,
 		PatientName:   e.Name,

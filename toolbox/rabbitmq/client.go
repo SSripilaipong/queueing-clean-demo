@@ -1,8 +1,8 @@
 package rabbitmq
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/streadway/amqp"
 )
 
@@ -36,6 +36,34 @@ func (c *Client) Publish(key string, event any) {
 	}
 }
 
+func (c *Client) Subscribe(ctx context.Context, key string, handle func(amqp.Delivery)) {
+	var err error
+	var delivery <-chan amqp.Delivery
+
+	if delivery, err = c.ch.Consume(
+		key,
+		"",
+		false,
+		false,
+		false,
+		false,
+		nil,
+	); err != nil {
+		panic(err)
+	}
+
+	running := true
+	for running {
+		select {
+		case msg := <-delivery:
+			handle(msg)
+
+		case <-ctx.Done():
+			running = false
+		}
+	}
+}
+
 func (c *Client) Disconnect() {
 	if err := c.ch.Close(); err != nil {
 		panic(err)
@@ -43,29 +71,4 @@ func (c *Client) Disconnect() {
 	if err := c.conn.Close(); err != nil {
 		panic(err)
 	}
-}
-
-func (c *Client) Ch() *amqp.Channel {
-	return c.ch
-}
-
-func makeConnectionAndChannel(username string, password string, host string, port string) (*amqp.Connection, *amqp.Channel) {
-	var err error
-
-	url := fmt.Sprintf("amqp://%s:%s@%s:%s", username, password, host, port)
-	var conn *amqp.Connection
-	if conn, err = amqp.Dial(url); err != nil {
-		panic(err)
-	}
-
-	var ch *amqp.Channel
-	if ch, err = conn.Channel(); err != nil {
-		defer func(conn *amqp.Connection) {
-			if err := conn.Close(); err != nil {
-				panic(err)
-			}
-		}(conn)
-		panic(err)
-	}
-	return conn, ch
 }
