@@ -23,13 +23,21 @@ func StartApp() {
 
 	isInterrupted := makeStopSignal()
 
-	for _, server := range servers {
-		server.Start()
-	}
+	startAllServers(servers)
 
 	<-isInterrupted
 	fmt.Println("exiting")
 
+	stopAllServersDescending(servers)
+}
+
+func startAllServers(servers []base.IServer) {
+	for _, server := range servers {
+		server.Start()
+	}
+}
+
+func stopAllServersDescending(servers []base.IServer) {
 	for i := len(servers) - 1; i >= 0; i-- {
 		if err := servers[i].Stop(); err != nil {
 			println(err.Error())
