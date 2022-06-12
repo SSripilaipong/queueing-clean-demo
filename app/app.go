@@ -21,22 +21,25 @@ func StartApp() {
 	deps := createRestDeps(connection.Client.Database("OPD"))
 	restServer := rest.Server{Deps: &deps}
 	outboxServer := outbox.NewServer()
+	workerServer := worker.NewServer()
 
-	isInterrupted, ctx, cancelRoutines := makeRoutineController()
+	isInterrupted := makeStopSignal()
 
 	restServer.Start("8080")
 	outboxServer.Start()
-	go worker.RunWorker(ctx)
+	workerServer.Start()
 
 	<-isInterrupted
-	cancelRoutines()
 
 	fmt.Println("exiting")
 	if err := restServer.Stop(); err != nil {
-		panic(err)
+		println(err.Error())
 	}
 	if err := outboxServer.Stop(); err != nil {
-		panic(err)
+		println(err.Error())
+	}
+	if err := workerServer.Stop(); err != nil {
+		println(err.Error())
 	}
 }
 
