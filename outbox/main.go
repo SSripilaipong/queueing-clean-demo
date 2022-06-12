@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"queueing-clean-demo/implementation/mongodb"
+	"queueing-clean-demo/toolbox/mongodb"
 )
 
 func relayLoop(ctx context.Context, ch *amqp.Channel, stream *mongo.ChangeStream) {

@@ -9,6 +9,7 @@ RUN go mod download
 COPY app app
 COPY base base
 COPY domain domain
+COPY toolbox toolbox
 COPY implementation implementation
 COPY rest rest
 COPY outbox outbox

@@ -8,6 +8,7 @@ import (
 	"queueing-clean-demo/base"
 	. "queueing-clean-demo/domain/clinical_diagnose"
 	"queueing-clean-demo/domain/common"
+	"queueing-clean-demo/toolbox/mongodb"
 )
 
 type VisitRepoInMongo struct {
@@ -54,7 +55,7 @@ func (r *VisitRepoInMongo) FindById(id string) (*VisitRepr, error) {
 	}
 
 	visit := &VisitRepr{}
-	if err = DecodeDocument(result, visit); err != nil {
+	if err = mongodb.DecodeDocument(result, visit); err != nil {
 		return nil, err
 	}
 
@@ -71,7 +72,7 @@ func (r *VisitRepoInMongo) Save(visit *VisitRepr) (*VisitRepr, error) {
 	filter := bson.D{{"_id", objectId}, {"_version", visit.GetVersion()}}
 
 	var document map[string]any
-	if document, err = MakeDocument(visit.Id, visit); err != nil {
+	if document, err = mongodb.MakeDocument(visit.Id, visit); err != nil {
 		return nil, err
 	}
 
@@ -93,14 +94,14 @@ func (r *VisitRepoInMongo) Create(visit *VisitRepr) (*VisitRepr, error) {
 	var err error
 	var document map[string]any
 
-	if document, err = MakeDocument(visit.Id, visit); err != nil {
+	if document, err = mongodb.MakeDocument(visit.Id, visit); err != nil {
 		return nil, err
 	}
 
 	switch _, err = r.Collection.InsertOne(context.Background(), &document); {
 	case err == nil:
 		break
-	case IsDuplicateKeyError(err):
+	case mongodb.IsDuplicateKeyError(err):
 		return nil, common.DuplicateVisitIdError{}
 	default:
 		return nil, err

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"queueing-clean-demo/implementation/mongodb"
 	"queueing-clean-demo/outbox"
 	"queueing-clean-demo/rest"
+	"queueing-clean-demo/toolbox/mongodb"
 	"queueing-clean-demo/worker"
 	"syscall"
 )

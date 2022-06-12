@@ -1,4 +1,4 @@
-package implementation
+package mongodb
 
 import (
 	"encoding/json"

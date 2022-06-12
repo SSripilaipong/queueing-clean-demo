@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"queueing-clean-demo/base"
 	. "queueing-clean-demo/domain/manage_doctor_queue"
+	"queueing-clean-demo/toolbox/mongodb"
 )
 
 type DoctorQueueRepoInMongo struct {
@@ -53,7 +54,7 @@ func (r *DoctorQueueRepoInMongo) FindByDoctorId(id string) (*DoctorQueueRepr, er
 	}
 
 	queue := &DoctorQueueRepr{}
-	if err = DecodeDocument(result, queue); err != nil {
+	if err = mongodb.DecodeDocument(result, queue); err != nil {
 		return nil, err
 	}
 
@@ -70,7 +71,7 @@ func (r *DoctorQueueRepoInMongo) Save(queue *DoctorQueueRepr) (*DoctorQueueRepr,
 	filter := bson.D{{"_id", objectId}, {"_version", queue.GetVersion()}}
 
 	var document map[string]any
-	if document, err = MakeDocument(queue.DoctorId, queue); err != nil {
+	if document, err = mongodb.MakeDocument(queue.DoctorId, queue); err != nil {
 		return nil, err
 	}
 
@@ -92,14 +93,14 @@ func (r *DoctorQueueRepoInMongo) Create(queue *DoctorQueueRepr) (*DoctorQueueRep
 	var err error
 	var document map[string]any
 
-	if document, err = MakeDocument(queue.DoctorId, queue); err != nil {
+	if document, err = mongodb.MakeDocument(queue.DoctorId, queue); err != nil {
 		return nil, err
 	}
 
 	switch _, err = r.Collection.InsertOne(context.Background(), &document); {
 	case err == nil:
 		break
-	case IsDuplicateKeyError(err):
+	case mongodb.IsDuplicateKeyError(err):
 		return nil, DuplicateDoctorQueueIdError{}
 	default:
 		return nil, err
