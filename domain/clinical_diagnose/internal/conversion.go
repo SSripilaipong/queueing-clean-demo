@@ -1,23 +1,23 @@
 package internal
 
 import (
-	clinical_diagnose2 "queueing-clean-demo/domain/clinical_diagnose"
+	. "queueing-clean-demo/domain/clinical_diagnose"
 )
 
-func AssessmentFromSubmitAssessmentRequest(r clinical_diagnose2.SubmitAssessment) Assessment {
+func AssessmentFromSubmitAssessmentRequest(r SubmitAssessment) Assessment {
 	return Assessment{
 		NursingAssessment: r.NursingAssessment,
 		PainScore:         r.PainScore,
 	}
 }
 
-func VisitResponseFromVisit(visit *Visit) clinical_diagnose2.VisitResponse {
-	resp := clinical_diagnose2.VisitResponse{
+func VisitResponseFromVisit(visit *Visit) VisitResponse {
+	resp := VisitResponse{
 		VisitId: visit.Id,
 	}
 
 	if a := visit.Assessment; a != nil {
-		resp.Assessment = clinical_diagnose2.AssessmentResponse{
+		resp.Assessment = AssessmentResponse{
 			NursingAssessment: a.NursingAssessment,
 			PainScore:         a.PainScore,
 		}

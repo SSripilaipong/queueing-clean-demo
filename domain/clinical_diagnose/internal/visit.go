@@ -2,7 +2,7 @@ package internal
 
 import (
 	"queueing-clean-demo/base"
-	clinical_diagnose2 "queueing-clean-demo/domain/clinical_diagnose"
+	. "queueing-clean-demo/domain/clinical_diagnose"
 	"queueing-clean-demo/domain/common"
 )
 
@@ -36,10 +36,10 @@ func NewVisit(id string, name string, gender string, age int) (*Visit, error) {
 
 func (v *Visit) SubmitAssessment(assessment Assessment) error {
 	if v.Assessment != nil {
-		return clinical_diagnose2.AssessmentAlreadyExistError{}
+		return AssessmentAlreadyExistError{}
 	}
 	v.Assessment = &assessment
-	v.AppendEvent(clinical_diagnose2.VisitAssessedEvent{
+	v.AppendEvent(VisitAssessedEvent{
 		VisitId: v.Id,
 		Name:    v.Name,
 		Gender:  v.Gender,
@@ -48,16 +48,16 @@ func (v *Visit) SubmitAssessment(assessment Assessment) error {
 	return nil
 }
 
-func (v *Visit) ToRepr() clinical_diagnose2.VisitRepr {
-	var assessment *clinical_diagnose2.AssessmentRepr
+func (v *Visit) ToRepr() VisitRepr {
+	var assessment *AssessmentRepr
 	if v.Assessment != nil {
-		assessment = &clinical_diagnose2.AssessmentRepr{
+		assessment = &AssessmentRepr{
 			NursingAssessment: v.Assessment.NursingAssessment,
 			PainScore:         v.Assessment.PainScore,
 		}
 	}
 
-	return clinical_diagnose2.VisitRepr{
+	return VisitRepr{
 		Id:         v.Id,
 		Name:       v.Name,
 		Gender:     v.Gender,
@@ -70,7 +70,7 @@ func (v *Visit) ToRepr() clinical_diagnose2.VisitRepr {
 	}
 }
 
-func NewVisitFromRepr(repr clinical_diagnose2.VisitRepr) *Visit {
+func NewVisitFromRepr(repr VisitRepr) *Visit {
 	var assessment *Assessment
 	if repr.Assessment != nil {
 		assessment = &Assessment{

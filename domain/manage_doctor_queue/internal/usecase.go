@@ -1,4 +1,4 @@
-package _manage_doctor_queue
+package internal
 
 import (
 	"queueing-clean-demo/domain/common"

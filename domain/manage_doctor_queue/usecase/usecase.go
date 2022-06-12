@@ -7,7 +7,7 @@ import (
 )
 
 func NewManageDoctorQueueUsecase(doctorQueueRepo IDoctorQueueRepo, clock IClock) domain.IManageDoctorQueueUsecase {
-	return &_manage_doctor_queue.Usecase{
+	return &internal.Usecase{
 		DoctorQueueRepo: doctorQueueRepo,
 		Clock:           clock,
 	}

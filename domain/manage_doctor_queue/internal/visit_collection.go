@@ -1,4 +1,4 @@
-package _manage_doctor_queue
+package internal
 
 type VisitCollection struct {
 	Queue map[string]VisitShortInfo `json:"queue"`

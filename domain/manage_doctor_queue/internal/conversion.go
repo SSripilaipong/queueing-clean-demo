@@ -1,11 +1,11 @@
-package _manage_doctor_queue
+package internal
 
 import (
-	"queueing-clean-demo/domain/manage_doctor_queue"
+	. "queueing-clean-demo/domain/manage_doctor_queue"
 	"time"
 )
 
-func VisitShortInfoFromPushVisitToDoctorQueueRequest(r manage_doctor_queue.PushVisitToDoctorQueue) VisitShortInfo {
+func VisitShortInfoFromPushVisitToDoctorQueueRequest(r PushVisitToDoctorQueue) VisitShortInfo {
 	return VisitShortInfo{
 		Id:        r.VisitId,
 		Name:      r.PatientName,
