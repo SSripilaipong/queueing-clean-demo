@@ -9,10 +9,10 @@ import (
 	"queueing-clean-demo/toolbox/endpoint"
 )
 
-func Route(ctx *gin.Context, deps *d.RestDeps) endpoint.Response {
+func Route(ctx *gin.Context, deps d.IRestDeps) endpoint.Response {
 	return endpoint.Endpoint(ctx, makeRequest, func(req clinical_diagnose.CreateVisit) endpoint.Response {
 
-		visit, err := deps.ClinicalDiagnoseUsecase.CreateVisit(req)
+		visit, err := deps.ClinicalDiagnose().CreateVisit(req)
 
 		switch err.(type) {
 		case common.InvalidVisitDataError:

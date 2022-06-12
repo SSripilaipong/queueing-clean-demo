@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### submit assessment to visit // will push visit the doctor queue (with fixed id)
-PUT http://localhost:8080/his/visits/62a5c0745679ad14ce97e763/assessment
+PUT http://localhost:8080/his/visits/62a5c4f7946d8a8d03ddc47f/assessment
 Content-Type: application/json
 
 {

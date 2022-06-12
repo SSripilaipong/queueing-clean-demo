@@ -15,11 +15,7 @@ import (
 func StartApp() {
 	SetupMessageBroker()
 
-	connection := makeMongoDbConnection()
-	defer connection.Disconnect(context.Background())
-
-	deps := createRestDeps(connection.Client.Database("OPD"))
-	restServer := rest.NewServer(&deps, "8080")
+	restServer := rest.NewServer(newRestDeps, "8080")
 	outboxServer := outbox.NewServer()
 	workerServer := worker.NewServer()
 

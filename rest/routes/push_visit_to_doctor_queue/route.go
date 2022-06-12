@@ -8,9 +8,9 @@ import (
 	"queueing-clean-demo/toolbox/endpoint"
 )
 
-func Route(ctx *gin.Context, deps *d.RestDeps) endpoint.Response {
+func Route(ctx *gin.Context, deps d.IRestDeps) endpoint.Response {
 	return endpoint.Endpoint(ctx, makeRequest, func(req manage_doctor_queue.PushVisitToDoctorQueue) endpoint.Response {
-		queue, err := deps.ManageDoctorQueueUsecase.PushVisit(req)
+		queue, err := deps.ManageDoctorQueue().PushVisit(req)
 
 		switch err.(type) {
 		case manage_doctor_queue.DoctorQueueNotFoundError:

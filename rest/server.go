@@ -10,7 +10,7 @@ import (
 )
 
 type Server struct {
-	deps         *deps.RestDeps
+	depsFactory  func() deps.IRestDeps
 	port         string
 	corsHandler  *cors.Cors
 	readTimeout  time.Duration
@@ -18,9 +18,9 @@ type Server struct {
 	server       *http.Server
 }
 
-func NewServer(deps *deps.RestDeps, port string) base.IServer {
+func NewServer(depsFactory func() deps.IRestDeps, port string) base.IServer {
 	return &Server{
-		deps:         deps,
+		depsFactory:  depsFactory,
 		port:         port,
 		corsHandler:  newCorsHandler(),
 		readTimeout:  180 * time.Second,
@@ -38,7 +38,10 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) serve() {
-	s.server = newHttpServer(s.port, getApiRouter(s.deps), s.corsHandler, s.readTimeout, s.writeTimeout)
+	restDeps := s.depsFactory()
+	defer restDeps.Destroy()
+
+	s.server = newHttpServer(s.port, getApiRouter(restDeps), s.corsHandler, s.readTimeout, s.writeTimeout)
 
 	err := s.server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {

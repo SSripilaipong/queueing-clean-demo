@@ -8,10 +8,10 @@ import (
 	"queueing-clean-demo/toolbox/endpoint"
 )
 
-func Route(ctx *gin.Context, deps *d.RestDeps) endpoint.Response {
+func Route(ctx *gin.Context, deps d.IRestDeps) endpoint.Response {
 	return endpoint.Endpoint(ctx, makeRequest, func(req manage_doctor_queue.CreateDoctorQueue) endpoint.Response {
 
-		_, err := deps.ManageDoctorQueueUsecase.CreateDoctorQueue(req)
+		_, err := deps.ManageDoctorQueue().CreateDoctorQueue(req)
 
 		switch err.(type) {
 		case manage_doctor_queue.DuplicateDoctorQueueIdError:

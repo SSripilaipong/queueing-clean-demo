@@ -11,7 +11,7 @@ import (
 	"queueing-clean-demo/toolbox/endpoint"
 )
 
-func getApiRouter(deps *d.RestDeps) *gin.Engine {
+func getApiRouter(deps d.IRestDeps) *gin.Engine {
 	router := gin.Default()
 
 	router.GET("/doctor-queues/:doctorId", endpoint.R(check_visits.Route, deps))

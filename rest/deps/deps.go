@@ -4,7 +4,8 @@ import (
 	"queueing-clean-demo/domain"
 )
 
-type RestDeps struct {
-	ClinicalDiagnoseUsecase  domain.IClinicalDiagnoseUsecase
-	ManageDoctorQueueUsecase domain.IManageDoctorQueueUsecase
+type IRestDeps interface {
+	ClinicalDiagnose() domain.IClinicalDiagnoseUsecase
+	ManageDoctorQueue() domain.IManageDoctorQueueUsecase
+	Destroy()
 }

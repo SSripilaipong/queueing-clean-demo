@@ -9,9 +9,9 @@ import (
 	"queueing-clean-demo/toolbox/endpoint"
 )
 
-func Route(ctx *gin.Context, deps *d.RestDeps) endpoint.Response {
+func Route(ctx *gin.Context, deps d.IRestDeps) endpoint.Response {
 	return endpoint.Endpoint(ctx, makeRequest, func(req clinical_diagnose.SubmitAssessment) endpoint.Response {
-		_, err := deps.ClinicalDiagnoseUsecase.SubmitAssessment(req)
+		_, err := deps.ClinicalDiagnose().SubmitAssessment(req)
 
 		switch err.(type) {
 		case common.VisitNotFoundError:

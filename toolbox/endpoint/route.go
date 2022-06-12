@@ -2,10 +2,9 @@ package endpoint
 
 import (
 	"github.com/gin-gonic/gin"
-	"queueing-clean-demo/rest/deps"
 )
 
-func R(route func(ctx *gin.Context, deps *deps.RestDeps) Response, deps *deps.RestDeps) func(ctx *gin.Context) {
+func R[D any](route func(ctx *gin.Context, deps D) Response, deps D) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		response := route(ctx, deps)
 		ctx.AbortWithStatusJSON(response.Code, response.Body)
