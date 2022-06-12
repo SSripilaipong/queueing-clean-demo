@@ -39,20 +39,17 @@ func DecodeDocument(result *mongo.SingleResult, ptr any) (err error) {
 	return nil
 }
 
-func MakeDocument(id string, aggregate base.IAggregateRepr) (doc map[string]any, err error) {
+func MakeDocument(id primitive.ObjectID, aggregate base.IAggregateRepr) (doc map[string]any, err error) {
 	doc = make(map[string]any)
 	var payload map[string]any
 	payload, err = structToMap(aggregate)
 	delete(payload, "_aggregate")
 
+	doc["_id"] = id
 	doc["payload"] = payload
 	doc["_version"] = aggregate.GetVersion()
 	doc["_latestEvents"], err = makeEvents(aggregate.GetEvents())
 	if err != nil {
-		return nil, err
-	}
-
-	if doc["_id"], err = primitive.ObjectIDFromHex(id); err != nil {
 		return nil, err
 	}
 

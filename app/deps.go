@@ -11,11 +11,11 @@ import (
 func createRestDeps(database *mongo.Database) d.RestDeps {
 	return d.RestDeps{
 		ClinicalDiagnoseUsecase: NewClinicalDiagnoseUsecase(
-			&impl.VisitRepoInMongo{Collection: database.Collection("VisitRepo")},
+			impl.NewVisitRepoInMongo(database.Collection("VisitRepo")),
 			impl.IdGenerator{},
 		),
 		ManageDoctorQueueUsecase: NewManageDoctorQueueUsecase(
-			&impl.DoctorQueueRepoInMongo{Collection: database.Collection("DoctorQueueRepo")},
+			impl.NewDoctorQueueRepoInMongo(database.Collection("DoctorQueueRepo")),
 			impl.Clock{},
 		),
 	}

@@ -1,109 +1,80 @@
 package implementation
 
 import (
-	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"queueing-clean-demo/base"
 	. "queueing-clean-demo/domain/manage_doctor_queue"
 	"queueing-clean-demo/toolbox/mongodb"
 )
 
-type DoctorQueueRepoInMongo struct {
-	Collection *mongo.Collection
+type doctorQueueRepoInMongo struct {
+	repo mongodb.MongoRepo[*DoctorQueueRepr]
 }
 
-func (r *DoctorQueueRepoInMongo) FindByDoctorIdAndUpdate(id string, update func(queue *DoctorQueueRepr) (*DoctorQueueRepr, error)) (*DoctorQueueRepr, error) {
-	var queue *DoctorQueueRepr
+func NewDoctorQueueRepoInMongo(collection *mongo.Collection) IDoctorQueueRepo {
+	return &doctorQueueRepoInMongo{
+		repo: mongodb.MongoRepo[*DoctorQueueRepr]{
+			Collection:           collection,
+			MaxOptimisticRetries: 20,
+		},
+	}
+}
+
+func (r *doctorQueueRepoInMongo) FindByDoctorIdAndUpdate(id string, update func(queue *DoctorQueueRepr) (*DoctorQueueRepr, error)) (*DoctorQueueRepr, error) {
 	var err error
 
-	if queue, err = base.OptimisticLockingRetry(20, func() (*DoctorQueueRepr, error) {
-		if queue, err = r.FindByDoctorId(id); err != nil {
-			return nil, err
-		}
-
-		if queue, err = update(queue); err != nil {
-			return nil, err
-		}
-
-		if queue, err = r.Save(queue); err != nil {
-			return nil, err
-		}
-
-		return queue, err
-	}); err != nil {
-		return nil, err
+	var objectId primitive.ObjectID
+	if objectId, err = primitive.ObjectIDFromHex(id); err != nil {
+		panic(err)
 	}
 
-	return queue, nil
+	result, err := r.repo.FindByIdAndUpdate(objectId, update)
+
+	switch err.(type) {
+	case mongodb.AggregateNotFoundError:
+		return nil, DoctorQueueNotFoundError{}
+	case nil:
+		return result, nil
+	}
+	panic(err)
 }
 
-func (r *DoctorQueueRepoInMongo) FindByDoctorId(id string) (*DoctorQueueRepr, error) {
+func (r *doctorQueueRepoInMongo) FindByDoctorId(id string) (*DoctorQueueRepr, error) {
 	var err error
 
 	var objectId primitive.ObjectID
 	if objectId, err = primitive.ObjectIDFromHex(id); err != nil {
 		return nil, err
 	}
-	filter := bson.D{{"_id", objectId}}
 
-	var result *mongo.SingleResult
-	if result = r.Collection.FindOne(context.Background(), filter); result.Err() == mongo.ErrNoDocuments {
+	var result *DoctorQueueRepr
+	result, err = r.repo.FindOne(bson.D{{"_id", objectId}})
+
+	switch err.(type) {
+	case mongodb.AggregateNotFoundError:
 		return nil, DoctorQueueNotFoundError{}
+	case nil:
+		return result, nil
 	}
-
-	queue := &DoctorQueueRepr{}
-	if err = mongodb.DecodeDocument(result, queue); err != nil {
-		return nil, err
-	}
-
-	return queue, nil
+	panic(err)
 }
 
-func (r *DoctorQueueRepoInMongo) Save(queue *DoctorQueueRepr) (*DoctorQueueRepr, error) {
+func (r *doctorQueueRepoInMongo) Create(queue *DoctorQueueRepr) (*DoctorQueueRepr, error) {
 	var err error
 
 	var objectId primitive.ObjectID
 	if objectId, err = primitive.ObjectIDFromHex(queue.DoctorId); err != nil {
 		return nil, err
 	}
-	filter := bson.D{{"_id", objectId}, {"_version", queue.GetVersion()}}
 
-	var document map[string]any
-	if document, err = mongodb.MakeDocument(queue.DoctorId, queue); err != nil {
-		return nil, err
-	}
+	_, err = r.repo.Create(objectId, queue)
 
-	var result *mongo.UpdateResult
-	switch result, err = r.Collection.UpdateOne(context.Background(), filter, bson.D{{"$set", &document}}); {
-	case result.ModifiedCount == 0:
-		return nil, base.OptimisticLockFailedError{}
-	case err == nil:
-		break
-	default:
-		return nil, err
-	}
-
-	queue.IncreaseVersion()
-	return queue, nil
-}
-
-func (r *DoctorQueueRepoInMongo) Create(queue *DoctorQueueRepr) (*DoctorQueueRepr, error) {
-	var err error
-	var document map[string]any
-
-	if document, err = mongodb.MakeDocument(queue.DoctorId, queue); err != nil {
-		return nil, err
-	}
-
-	switch _, err = r.Collection.InsertOne(context.Background(), &document); {
-	case err == nil:
-		break
-	case mongodb.IsDuplicateKeyError(err):
+	switch err.(type) {
+	case mongodb.DuplicateIdError:
 		return nil, DuplicateDoctorQueueIdError{}
-	default:
-		return nil, err
+	case nil:
+		return queue, nil
 	}
-	return queue, nil
+	panic(err)
 }

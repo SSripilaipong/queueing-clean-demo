@@ -14,7 +14,7 @@ type Deps struct {
 func createDeps(db *mongo.Database) *Deps {
 	return &Deps{
 		ManageDoctorQueueUsecase: usecase.NewManageDoctorQueueUsecase(
-			&impl.DoctorQueueRepoInMongo{Collection: db.Collection("DoctorQueueRepo")},
+			impl.NewDoctorQueueRepoInMongo(db.Collection("DoctorQueueRepo")),
 			impl.Clock{},
 		),
 	}
