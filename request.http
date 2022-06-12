@@ -1,8 +1,8 @@
-### create doctor queue
+### create doctor queue // fixed doctor id for simplicity
 POST http://localhost:8080/doctor-queues/629c93cae6509bc3a7b1aaf7
 Content-Type: application/json
 
-### create visit
+### create visit // random visit id
 POST http://localhost:8080/his/visits
 Content-Type: application/json
 
@@ -12,7 +12,7 @@ Content-Type: application/json
   "age": 123
 }
 
-### submit assessment to visit
+### submit assessment to visit // will push visit the doctor queue (with fixed id)
 PUT http://localhost:8080/his/visits/62a5b50689b7b2dd7716d142/assessment
 Content-Type: application/json
 

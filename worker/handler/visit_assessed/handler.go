@@ -8,7 +8,7 @@ import (
 
 func Handler(deps *worker_deps.Deps, e clinical_diagnose.VisitAssessedEvent) {
 	_, err := deps.ManageDoctorQueueUsecase.PushVisit(manage_doctor_queue.PushVisitToDoctorQueue{
-		DoctorId:      "629c93cae6509bc3a7b1aaf7",
+		DoctorId:      "629c93cae6509bc3a7b1aaf7", // fixed for simplicity
 		VisitId:       e.VisitId,
 		PatientName:   e.Name,
 		PatientGender: e.Gender,
