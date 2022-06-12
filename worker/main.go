@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/streadway/amqp"
-	"queueing-clean-demo/domain/clinical_diagnose/contract"
+	"queueing-clean-demo/domain/clinical_diagnose"
 	"queueing-clean-demo/domain/manage_doctor_queue/contract"
 	"queueing-clean-demo/implementation/mongodb"
 )

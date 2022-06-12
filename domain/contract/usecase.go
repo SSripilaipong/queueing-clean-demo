@@ -1,13 +1,13 @@
 package domain
 
 import (
-	"queueing-clean-demo/domain/clinical_diagnose/contract"
+	clinical_diagnose2 "queueing-clean-demo/domain/clinical_diagnose"
 	"queueing-clean-demo/domain/manage_doctor_queue/contract"
 )
 
 type IClinicalDiagnoseUsecase interface {
-	CreateVisit(request clinical_diagnose.CreateVisit) (clinical_diagnose.VisitResponse, error)
-	SubmitAssessment(request clinical_diagnose.SubmitAssessment) (clinical_diagnose.VisitResponse, error)
+	CreateVisit(request clinical_diagnose2.CreateVisit) (clinical_diagnose2.VisitResponse, error)
+	SubmitAssessment(request clinical_diagnose2.SubmitAssessment) (clinical_diagnose2.VisitResponse, error)
 }
 
 type IManageDoctorQueueUsecase interface {

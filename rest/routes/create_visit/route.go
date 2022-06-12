@@ -3,7 +3,7 @@ package create_visit
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"queueing-clean-demo/domain/clinical_diagnose/contract"
+	"queueing-clean-demo/domain/clinical_diagnose"
 	"queueing-clean-demo/domain/common/contract"
 	d "queueing-clean-demo/rest/deps"
 	"queueing-clean-demo/rest/ext"

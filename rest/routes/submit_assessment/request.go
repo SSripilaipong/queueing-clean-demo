@@ -2,7 +2,7 @@ package submit_assessment
 
 import (
 	"github.com/gin-gonic/gin"
-	"queueing-clean-demo/domain/clinical_diagnose/contract"
+	"queueing-clean-demo/domain/clinical_diagnose"
 )
 
 type SubmitAssessment struct {
