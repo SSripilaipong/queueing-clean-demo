@@ -5,19 +5,19 @@ import (
 	"net/http"
 	"queueing-clean-demo/domain/manage_doctor_queue"
 	d "queueing-clean-demo/rest/deps"
-	"queueing-clean-demo/rest/ext"
+	"queueing-clean-demo/toolbox/endpoint"
 )
 
-func Route(ctx *gin.Context, deps *d.RestDeps) ext.Response {
-	return ext.Endpoint(ctx, makeRequest, func(req manage_doctor_queue.CheckVisits) ext.Response {
+func Route(ctx *gin.Context, deps *d.RestDeps) endpoint.Response {
+	return endpoint.Endpoint(ctx, makeRequest, func(req manage_doctor_queue.CheckVisits) endpoint.Response {
 
 		queue, err := deps.ManageDoctorQueueUsecase.CheckVisits(req)
 
 		switch err.(type) {
 		case manage_doctor_queue.DoctorQueueNotFoundError:
-			return ext.Response{Code: http.StatusNotFound, Body: gin.H{"message": "doctor queue not found"}}
+			return endpoint.Response{Code: http.StatusNotFound, Body: gin.H{"message": "doctor queue not found"}}
 		case nil:
-			return ext.Response{Code: http.StatusOK, Body: queue}
+			return endpoint.Response{Code: http.StatusOK, Body: queue}
 		}
 		panic(err)
 	})

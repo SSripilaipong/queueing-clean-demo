@@ -1,4 +1,4 @@
-package ext
+package endpoint
 
 import (
 	"github.com/gin-gonic/gin"

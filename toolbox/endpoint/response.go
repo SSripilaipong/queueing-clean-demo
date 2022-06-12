@@ -1,4 +1,4 @@
-package ext
+package endpoint
 
 type Response struct {
 	Code int
