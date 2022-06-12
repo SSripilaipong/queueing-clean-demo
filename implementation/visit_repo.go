@@ -37,7 +37,7 @@ func (r *visitRepoInMongo) FindByIdAndUpdate(id string, update func(visit *Visit
 	case nil:
 		return result, nil
 	}
-	panic(err)
+	return nil, err
 }
 
 func (r *visitRepoInMongo) Create(visit *VisitRepr) (*VisitRepr, error) {

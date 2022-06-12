@@ -13,6 +13,7 @@ type server struct {
 
 func NewServer() base.IServer {
 	ctx, cancel := context.WithCancel(context.Background())
+
 	return &server{
 		ctx:    ctx,
 		cancel: cancel,
@@ -21,7 +22,7 @@ func NewServer() base.IServer {
 }
 
 func (s *server) Start() {
-	go RunOutboxRelay(s.ctx, s.exited)
+	go runOutboxRelay(s.ctx, s.exited)
 }
 
 func (s *server) Stop() error {
